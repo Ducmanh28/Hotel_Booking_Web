@@ -1,6 +1,6 @@
-# HOTEL BOOKING APP
-# Mô tả ứng dụng
-Là một ứng dụng đặt phòng khách sạn. Sử dụng ngôn ngữ lập trình Python và cơ sở dữ liệu MySql làm database để thiết kế hệ thống phần back end.
+# HOTEL BOOKING WEB
+# Mô tả trang web
+Là một trang đặt phòng và quản lý việc đặt phòng khách sạn. Sử dụng ngôn ngữ lập trình Python và cơ sở dữ liệu MySql làm database để thiết kế hệ thống phần back end.
 
 Ứng dụng có các chức năng cơ bản so với một ứng dụng hoàn chỉnh. Các chức năng đó bao gồm:
 - Xác thực: 
