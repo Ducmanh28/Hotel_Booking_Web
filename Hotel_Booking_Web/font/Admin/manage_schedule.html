@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Lịch - Hotel Admin</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  
+  <style>
+    :root {
+      --primary-color: #0d6efd;
+      --sidebar-width: 260px;
+      --bg-color: #f3f4f7;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      overflow-x: hidden;
+    }
+
+    /* Navbar & Sidebar (Đồng bộ) */
+    .navbar {
+      background-color: #fff !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      z-index: 1000;
+      height: 70px;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--primary-color) !important;
+      font-size: 1.5rem;
+    }
+    
+    .sidebar {
+      width: var(--sidebar-width);
+      min-height: calc(100vh - 70px);
+      background-color: #fff;
+      border-right: 1px solid #eee;
+      position: fixed;
+      top: 70px;
+      left: 0;
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+
+    .main-content {
+      margin-left: var(--sidebar-width);
+      margin-top: 70px;
+      padding: 30px;
+      width: calc(100% - var(--sidebar-width));
+    }
+
+    .sidebar .profile {
+      text-align: center;
+      padding: 0 20px 20px 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .sidebar .profile img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid var(--bg-color);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .nav-link {
+      color: #6c757d;
+      font-weight: 500;
+      padding: 12px 25px;
+      margin-bottom: 5px;
+      border-radius: 0 25px 25px 0;
+      transition: all 0.2s;
+      margin-right: 15px;
+    }
+    .nav-link:hover, .nav-link.active {
+      background-color: #e7f1ff;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    .nav-link i { margin-right: 10px; font-size: 1.1rem; }
+
+    /* Custom Cards & Table */
+    .card-custom {
+      background: white;
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .table thead th {
+      background-color: #f8f9fa;
+      border-bottom: 2px solid #e9ecef;
+      color: #495057;
+      font-weight: 600;
+      padding: 15px;
+      white-space: nowrap;
+    }
+    
+    .table tbody td {
+      vertical-align: middle;
+      padding: 15px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .action-btn {
+      width: 32px; height: 32px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      margin: 0 2px;
+      transition: 0.2s;
+    }
+    .action-btn:hover { background-color: #e9ecef; }
+    
+    .search-group { position: relative; }
+    .search-group .form-control { padding-left: 40px; border-radius: 8px; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #adb5bd; }
+
+    /* Badge Styles */
+    .badge-status { padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 500; }
+    .bg-status-busy { background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+    .bg-status-maintenance { background-color: #fff3cd; color: #664d03; border: 1px solid #ffecb5; }
+    .bg-status-other { background-color: #e2e3e5; color: #41464b; }
+
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="admin.html">
+        <i class="bi bi-buildings-fill me-2"></i>Hotel Admin
+      </a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <div class="d-none d-md-block text-muted small" id="today-date"></div>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm px-3 rounded-pill">
+          <i class="bi bi-box-arrow-right me-1"></i> Đăng Xuất
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar d-flex flex-column">
+    <div class="profile">
+      <img src="admin.jpg" alt="Admin Avatar" id="admin-avatar" style="cursor: pointer;"/>
+      <p class="mt-3 mb-0 fw-bold text-dark" id="display-admin-name">Loading...</p>
+      <small class="text-muted">Administrator</small>
+    </div>
+    <nav class="nav flex-column">
+      <a class="nav-link" href="admin.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a class="nav-link" href="manage_users.html"><i class="bi bi-people"></i> Quản lý người dùng</a>
+      <a class="nav-link" href="manage_hotels.html"><i class="bi bi-building"></i> Quản lý khách sạn</a>
+      <a class="nav-link" href="manage_rooms.html"><i class="bi bi-door-open"></i> Quản lý phòng</a>
+      <a class="nav-link" href="manage_services.html"><i class="bi bi-gear"></i> Quản lý dịch vụ</a>
+      <a class="nav-link" href="manage_invoices.html"><i class="bi bi-receipt"></i> Quản lý hóa đơn</a>
+      <a class="nav-link active" href="manage_schedule.html"><i class="bi bi-calendar-check"></i> Quản lý lịch</a>
+      <a class="nav-link" href="manage_supports.html"><i class="bi bi-headset"></i> Hỗ trợ khách hàng</a>
+      <a class="nav-link" href="manage_log.html"><i class="bi bi-journal-text"></i> Xem Log</a>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-bold mb-0">Quản lý Lịch Phòng</h4>
+      <button class="btn btn-primary" id="addServiceBtn">
+        <i class="bi bi-plus-lg me-1"></i> Thêm Lịch
+      </button>
+    </div>
+
+    <div class="card-custom">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label text-muted small">Tìm kiếm theo</label>
+          <select class="form-select" id="SearchType">
+            <option value="room_number">Số Phòng</option>
+            <option value="room_type_id">Mã loại phòng</option>
+            <option value="hotel_id">Mã Khách sạn</option>
+            <option value="state">Trạng thái (Booked/Busy)</option>
+          </select>
+        </div>
+        <div class="col-md-5">
+          <label class="form-label text-muted small">Từ khóa</label>
+          <div class="search-group">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" id="SearchTypeValue" class="form-control" placeholder="Nhập thông tin cần Tìm kiếm...">
+          </div>
+        </div>
+        <div class="col-md-2">
+          <button type="button" class="btn btn-primary w-100" onclick="searchSchedules()">
+            Tìm kiếm
+          </button>
+        </div>
+        <div class="col-md-2">
+           <button type="button" class="btn btn-light w-100 border" onclick="loadSchedules()">
+            <i class="bi bi-arrow-clockwise me-1"></i> Làm mới
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-custom p-0 overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Khách sạn</th>
+              <th>Loại phòng</th>
+              <th>Số Phòng</th>
+              <th>Trạng thái</th>
+              <th>Bận từ ngày</th>
+              <th>Bận đến ngày</th>
+              <th class="text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="schedules-table-body">
+            <tr><td colspan="8" class="text-center py-4 text-muted">Đang tải dữ liệu...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="createScheduleModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="createScheduleForm">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold">Thêm Lịch Bận Mới</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Chọn Khách sạn <span class="text-danger">*</span></label> 
+                <select class="form-select" id="hotelSelect" name="hotel_id" required>
+                  <option value="">-- Chọn khách sạn --</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Chọn Loại phòng <span class="text-danger">*</span></label> 
+                <select class="form-select" id="RoomTypeSelect" name="room_type_id" required disabled>
+                  <option value="">-- Vui lòng chọn khách sạn trước --</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Chọn Số Phòng <span class="text-danger">*</span></label>
+                <select class="form-select" id="RoomSelect" name="room_number" required disabled>
+                    <option value="">-- Vui lòng chọn loại phòng trước --</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Bận từ ngày</label>
+                <input type="date" name="busy_from" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Bận đến ngày</label>
+                <input type="date" name="busy_to" class="form-control" required>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-primary px-4">Tạo mới</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="editScheduleModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="editScheduleForm">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold">Chỉnh sửa Lịch</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="edit-schedule-id">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label small text-muted">Khách sạn (Read-only)</label>
+                <input type="text" id="edit-schedulehotel" class="form-control bg-light" disabled>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Loại Phòng (Read-only)</label>
+                <input type="text" id="edit-scheduleroomtypes" class="form-control bg-light" disabled>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Số Phòng (Read-only)</label>
+                <input type="text" id="edit-scheduleroomnumber" class="form-control bg-light" disabled>
+              </div>
+              <div class="col-12">
+                <label class="form-label small text-muted">Trạng thái (Read-only)</label>
+                <input type="text" id="edit-roomstate" class="form-control bg-light" disabled>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Bận từ ngày</label>
+                <input type="date" id="edit-busyfrom" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Bận đến ngày</label>
+                <input type="date" id="edit-busyto" class="form-control" required>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    const token = localStorage.getItem("access_token");
+    const adminID = localStorage.getItem("customer_id");
+    const API_URL = "https://api.ducmanhsuncloud.click";
+
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!token) {
+         window.location.href = "../home.html";
+         return;
+      }
+
+      document.getElementById("display-admin-name").innerText = localStorage.getItem("ADMINNAME") || "Admin";
+      document.getElementById("today-date").innerText = new Date().toLocaleDateString("vi-VN", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById("admin-avatar").onclick = () => window.location.href = "admin_info.html";
+
+      loadSchedules();
+    });
+
+    // --- 1. LOAD SCHEDULES (With Names Lookup) ---
+    async function loadSchedules() {
+      const tbody = document.getElementById("schedules-table-body");
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Đang tải dữ liệu...</p></td></tr>`;
+
+      try {
+        const response = await fetch(`${API_URL}/admin/schedules`, {
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          }
+        });
+        const schedules = await response.json();
+
+        const schedulesWithNames = await Promise.all(schedules.map(async (schedule) => {
+            try {
+                const nameRes = await fetch(`${API_URL}/admin/invoices/get_name`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                    body: JSON.stringify({ 
+                        customer_id: 0, 
+                        hotel_id: schedule.hotel_id, 
+                        room_type_id: schedule.room_type_id 
+                    })
+                });
+                const names = await nameRes.json();
+                return { ...schedule, names };
+            } catch (e) {
+                return { ...schedule, names: {} };
+            }
+        }));
+
+        renderScheduleTable(schedulesWithNames);
+
+      } catch (error) {
+        console.error("Lỗi:", error);
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4">Không thể tải dữ liệu</td></tr>`;
+      }
+    }
+
+    // --- 2. SEARCH SCHEDULES ---
+    async function searchSchedules() {
+      const type = document.getElementById("SearchType").value;
+      const typeValue = document.getElementById("SearchTypeValue").value;
+      const tbody = document.getElementById("schedules-table-body");
+
+      if (!typeValue.trim()) {
+          loadSchedules();
+          return;
+      }
+
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>`;
+
+      try {
+          const response = await fetch(`${API_URL}/admin/schedules/find`, {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify({ type: type, type_data: typeValue })
+          });
+          
+          if (!response.ok) throw new Error("Lỗi tìm kiếm");
+          
+          let schedules = await response.json();
+          let schedulesArray = Array.isArray(schedules) ? schedules : [schedules];
+
+          const schedulesWithNames = await Promise.all(schedulesArray.map(async (schedule) => {
+                try {
+                    const nameRes = await fetch(`${API_URL}/admin/invoices/get_name`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                        body: JSON.stringify({ customer_id: 0, hotel_id: schedule.hotel_id, room_type_id: schedule.room_type_id })
+                    });
+                    const names = await nameRes.json();
+                    return { ...schedule, names };
+                } catch (e) { return { ...schedule, names: {} }; }
+          }));
+          
+          renderScheduleTable(schedulesWithNames);
+
+      } catch (error) {
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4">Không tìm thấy kết quả</td></tr>`;
+      }
+    }
+
+    // --- 3. RENDER TABLE FUNCTION ---
+    function renderScheduleTable(schedules) {
+        const tbody = document.getElementById("schedules-table-body");
+        tbody.innerHTML = "";
+
+        if (!schedules || schedules.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">Không có dữ liệu</td></tr>`;
+            return;
+        }
+
+        schedules.forEach(schedule => {
+            const row = document.createElement("tr");
+            const names = schedule.names || {};
+            const hotelName = names.hotel_name || `ID: ${schedule.hotel_id}`;
+            const roomTypeName = names.room_type_name || `ID: ${schedule.room_type_id}`;
+
+            // Status Badge
+            let statusBadge = `<span class="badge badge-status bg-status-other">${schedule.state}</span>`;
+            if (schedule.state === 'Booked') statusBadge = `<span class="badge badge-status bg-status-busy">Booked</span>`;
+            else if (schedule.state === 'Maintenance') statusBadge = `<span class="badge badge-status bg-status-maintenance">Maintenance</span>`;
+
+            row.innerHTML = `
+              <td><span class="fw-bold text-muted">#${schedule.id}</span></td>
+              <td>${hotelName}</td>
+              <td>${roomTypeName}</td>
+              <td><span class="fw-bold">${schedule.room_number}</span></td>
+              <td>${statusBadge}</td>
+              <td>${new Date(schedule.busy_from).toLocaleDateString('vi-VN')}</td>
+              <td>${new Date(schedule.busy_to).toLocaleDateString('vi-VN')}</td>
+              <td class="text-center">
+                <button class="btn btn-light action-btn btn-edit text-primary" data-id="${schedule.id}" title="Sửa"><i class="bi bi-pencil-square"></i></button>
+                <button class="btn btn-light action-btn btn-delete text-danger" data-id="${schedule.id}" title="Xóa"><i class="bi bi-trash"></i></button>
+              </td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        attachEventListeners();
+    }
+
+    // --- 4. EVENT LISTENERS ---
+    function attachEventListeners() {
+        // Edit
+        document.querySelectorAll(".btn-edit").forEach(btn => 
+          btn.addEventListener("click", async (e) => {
+             const id = e.target.closest("button").dataset.id;
+             try {
+                 // Get Schedule Info
+                 const res = await fetch(`${API_URL}/admin/schedules/${id}`, { headers: { "Authorization": `Bearer ${token}` } });
+                 const schedule = await res.json();
+                 
+                 // Get Names for Read-only fields
+                 const nameRes = await fetch(`${API_URL}/admin/invoices/get_name`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                    body: JSON.stringify({ customer_id: 0, hotel_id: schedule.hotel_id, room_type_id: schedule.room_type_id })
+                 });
+                 const names = await nameRes.json();
+
+                 document.getElementById("edit-schedule-id").value = schedule.id;
+                 document.getElementById("edit-schedulehotel").value = names.hotel_name || schedule.hotel_id;
+                 document.getElementById("edit-scheduleroomtypes").value = names.room_type_name || schedule.room_type_id;
+                 document.getElementById("edit-scheduleroomnumber").value = schedule.room_number;
+                 document.getElementById("edit-roomstate").value = schedule.state;
+                 document.getElementById("edit-busyfrom").value = schedule.busy_from; // Ensure format YYYY-MM-DD
+                 document.getElementById("edit-busyto").value = schedule.busy_to;
+                 
+                 new bootstrap.Modal(document.getElementById("editScheduleModal")).show();
+             } catch(err) { alert("Lỗi tải thông tin"); }
+          })
+        );
+
+        // Delete
+        document.querySelectorAll(".btn-delete").forEach(btn => 
+          btn.addEventListener("click", async (e) => {
+             const id = e.target.closest("button").dataset.id;
+             if(!confirm("Bạn có chắc chắn muốn xóa lịch này?")) return;
+             
+             try {
+                 const res = await fetch(`${API_URL}/admin/schedules/${id}`, {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }
+                 });
+                 const result = await res.json();
+                 alert(result.message || "Xóa thành công!");
+                 
+                 await logAction("Delete Schedule");
+                 loadSchedules();
+             } catch(err) { alert("Lỗi xóa: " + err.message); }
+          })
+        );
+    }
+
+    // --- 5. CREATE LOGIC (Cascading Dropdowns) ---
+    const addBtn = document.getElementById("addServiceBtn");
+    const hotelSelect = document.getElementById("hotelSelect");
+    const roomTypeSelect = document.getElementById("RoomTypeSelect");
+    const roomNumberSelect = document.getElementById("RoomSelect");
+
+    // Load Hotels when Modal Opens
+    addBtn.onclick = () => {
+        fetch(`${API_URL}/hotels`, { headers: { "Authorization": `Bearer ${token}` } })
+        .then(res => res.json())
+        .then(data => {
+            hotelSelect.innerHTML = '<option value="">-- Chọn khách sạn --</option>';
+            data.forEach(h => hotelSelect.innerHTML += `<option value="${h.id}">${h.name}</option>`);
+            
+            // Reset dependent dropdowns
+            roomTypeSelect.innerHTML = '<option value="">-- Vui lòng chọn khách sạn trước --</option>';
+            roomTypeSelect.disabled = true;
+            roomNumberSelect.innerHTML = '<option value="">-- Vui lòng chọn loại phòng trước --</option>';
+            roomNumberSelect.disabled = true;
+
+            new bootstrap.Modal(document.getElementById("createScheduleModal")).show();
+        });
+    };
+
+    // Hotel Change -> Load Room Types
+    hotelSelect.onchange = async function() {
+        const hotelId = this.value;
+        roomTypeSelect.innerHTML = '<option value="">Loading...</option>';
+        
+        if(!hotelId) {
+            roomTypeSelect.innerHTML = '<option value="">-- Vui lòng chọn khách sạn trước --</option>';
+            roomTypeSelect.disabled = true;
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/admin/hotels/${hotelId}/roomtypes`, { headers: { "Authorization": `Bearer ${token}` } });
+            const rooms = await res.json();
+            roomTypeSelect.innerHTML = '<option value="">-- Chọn loại phòng --</option>';
+            rooms.forEach(r => roomTypeSelect.innerHTML += `<option value="${r.id}">${r.name}</option>`);
+            roomTypeSelect.disabled = false;
+        } catch(e) { roomTypeSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>'; }
+    };
+
+    // Room Type Change -> Load Room Numbers
+    roomTypeSelect.onchange = async function() {
+        const typeId = this.value;
+        roomNumberSelect.innerHTML = '<option value="">Loading...</option>';
+
+        if(!typeId) {
+            roomNumberSelect.innerHTML = '<option value="">-- Vui lòng chọn loại phòng trước --</option>';
+            roomNumberSelect.disabled = true;
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/admin/schedules/${typeId}/roomnumber`, { headers: { "Authorization": `Bearer ${token}` } });
+            const rooms = await res.json();
+            roomNumberSelect.innerHTML = '<option value="">-- Chọn số phòng --</option>';
+            // Giả sử API trả về mảng object [{room_number: "101"}, ...]
+            rooms.forEach(r => roomNumberSelect.innerHTML += `<option value="${r.room_number}">${r.room_number}</option>`);
+            roomNumberSelect.disabled = false;
+        } catch(e) { roomNumberSelect.innerHTML = '<option value="">Lỗi tải số phòng</option>'; }
+    };
+
+    // Submit Create
+    document.getElementById("createScheduleForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const res = await fetch(`${API_URL}/admin/schedules/create`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            alert(result.message || "Tạo thành công");
+            await logAction("Create Schedule");
+            location.reload();
+        } catch(err) { alert("Lỗi tạo: " + err.message); }
+    });
+
+    // Submit Edit
+    document.getElementById("editScheduleForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const id = document.getElementById("edit-schedule-id").value;
+        const data = {
+            busy_from: document.getElementById("edit-busyfrom").value,
+            busy_to: document.getElementById("edit-busyto").value,
+            // Lưu ý: Tùy API của bạn, có thể cần gửi thêm state hoặc các field khác
+        };
+
+        try {
+            // Lưu ý: Endpoint update schedule của bạn có vẻ đang dùng chung logic với additional services trong code cũ? 
+            // Tôi sửa lại cho đúng logic schedule: /admin/schedules/{id}
+            const res = await fetch(`${API_URL}/admin/schedules/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            alert(result.message || "Cập nhật thành công!");
+            await logAction("Update Schedule");
+            location.reload();
+        } catch(err) { alert("Lỗi: " + err.message); }
+    });
+
+    // --- Helper: Log Action ---
+    async function logAction(actionName) {
+        try {
+            await fetch(`${API_URL}/admin/logs`, {
+                method: "POST",
+                headers:{ "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify({ customer_id: adminID, action: actionName })
+            });
+        } catch(e) {}
+    }
+
+    // Logout
+    document.getElementById("logoutBtn").onclick = async () => {
+       if(!confirm("Đăng xuất?")) return;
+       try { await fetch(`${API_URL}/logout`, { method: "POST", headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify({ action: "Logout" }) }); } catch(e){}
+       localStorage.clear();
+       window.location.href = "../home.html";
+    };
+
+  </script>
+</body>
+</html>

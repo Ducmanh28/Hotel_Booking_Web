@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hỗ trợ khách hàng - Hotel Admin</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  
+  <style>
+    :root {
+      --primary-color: #0d6efd;
+      --sidebar-width: 260px;
+      --bg-color: #f3f4f7;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      overflow-x: hidden;
+    }
+
+    /* Navbar & Sidebar */
+    .navbar {
+      background-color: #fff !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      z-index: 1000;
+      height: 70px;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--primary-color) !important;
+      font-size: 1.5rem;
+    }
+    
+    .sidebar {
+      width: var(--sidebar-width);
+      min-height: calc(100vh - 70px);
+      background-color: #fff;
+      border-right: 1px solid #eee;
+      position: fixed;
+      top: 70px;
+      left: 0;
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+
+    .main-content {
+      margin-left: var(--sidebar-width);
+      margin-top: 70px;
+      padding: 30px;
+      width: calc(100% - var(--sidebar-width));
+    }
+
+    .sidebar .profile {
+      text-align: center;
+      padding: 0 20px 20px 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .sidebar .profile img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid var(--bg-color);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .nav-link {
+      color: #6c757d;
+      font-weight: 500;
+      padding: 12px 25px;
+      margin-bottom: 5px;
+      border-radius: 0 25px 25px 0;
+      transition: all 0.2s;
+      margin-right: 15px;
+    }
+    .nav-link:hover, .nav-link.active {
+      background-color: #e7f1ff;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    .nav-link i { margin-right: 10px; font-size: 1.1rem; }
+
+    /* Custom Cards & Table */
+    .card-custom {
+      background: white;
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .table thead th {
+      background-color: #f8f9fa;
+      border-bottom: 2px solid #e9ecef;
+      color: #495057;
+      font-weight: 600;
+      padding: 15px;
+      white-space: nowrap;
+    }
+    
+    .table tbody td {
+      vertical-align: middle;
+      padding: 15px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    /* Badge Styles */
+    .badge-status { padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 500; }
+    .bg-status-pending { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+    .bg-status-resolved { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+    .bg-status-closed { background-color: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+
+    .search-group { position: relative; }
+    .search-group .form-control { padding-left: 40px; border-radius: 8px; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #adb5bd; }
+    
+    .message-truncate {
+        max-width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="admin.html">
+        <i class="bi bi-buildings-fill me-2"></i>Hotel Admin
+      </a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <div class="d-none d-md-block text-muted small" id="today-date"></div>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm px-3 rounded-pill">
+          <i class="bi bi-box-arrow-right me-1"></i> Đăng Xuất
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar d-flex flex-column">
+    <div class="profile">
+      <img src="admin.jpg" alt="Admin Avatar" id="admin-avatar" style="cursor: pointer;"/>
+      <p class="mt-3 mb-0 fw-bold text-dark" id="display-admin-name">Loading...</p>
+      <small class="text-muted">Administrator</small>
+    </div>
+    <nav class="nav flex-column">
+      <a class="nav-link" href="admin.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a class="nav-link" href="manage_users.html"><i class="bi bi-people"></i> Quản lý người dùng</a>
+      <a class="nav-link" href="manage_hotels.html"><i class="bi bi-building"></i> Quản lý khách sạn</a>
+      <a class="nav-link" href="manage_rooms.html"><i class="bi bi-door-open"></i> Quản lý phòng</a>
+      <a class="nav-link" href="manage_services.html"><i class="bi bi-gear"></i> Quản lý dịch vụ</a>
+      <a class="nav-link" href="manage_invoices.html"><i class="bi bi-receipt"></i> Quản lý hóa đơn</a>
+      <a class="nav-link" href="manage_schedule.html"><i class="bi bi-calendar-check"></i> Quản lý lịch</a>
+      <a class="nav-link active" href="manage_supports.html"><i class="bi bi-headset"></i> Hỗ trợ khách hàng</a>
+      <a class="nav-link" href="manage_log.html"><i class="bi bi-journal-text"></i> Xem Log</a>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-bold mb-0">Yêu cầu hỗ trợ (Support Tickets)</h4>
+      <button class="btn btn-light border" onclick="loadSupports()">
+        <i class="bi bi-arrow-clockwise me-1"></i> Làm mới
+      </button>
+    </div>
+
+    <div class="card-custom">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label text-muted small">Tìm kiếm</label>
+          <div class="search-group">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" id="searchInput" class="form-control" placeholder="Nhập Email, Chủ đề...">
+          </div>
+        </div>
+        <div class="col-md-3">
+           <label class="form-label text-muted small">Trạng thái</label>
+           <select id="statusFilter" class="form-select">
+             <option value="">Tất cả</option>
+             <option value="pending">Chờ xử lý (Pending)</option>
+             <option value="answered">Đã trả lời (Answered)</option>
+           </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary w-100" onclick="filterSupports()">Tìm kiếm</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-custom p-0 overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th width="5%">ID</th>
+              <th width="20%">Người gửi (Email)</th>
+              <th width="20%">Chủ đề</th>
+              <th width="25%">Nội dung</th>
+              <th width="15%">Trạng thái</th>
+              <th width="15%">Ngày tạo</th>
+              <th width="5%" class="text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="support-table-body">
+            <tr><td colspan="7" class="text-center py-4 text-muted">Đang tải dữ liệu...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="ticketDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">Chi tiết yêu cầu #<span id="detail-id"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+             <div class="col-md-6">
+                <label class="small text-muted fw-bold">Người gửi</label>
+                <div class="p-2 bg-light rounded border">
+                    <i class="bi bi-envelope me-2"></i> <span id="detail-email"></span><br>
+                    <small class="text-muted ms-4" id="detail-customer-id"></small>
+                </div>
+             </div>
+             <div class="col-md-6">
+                <label class="small text-muted fw-bold">Thời gian tạo</label>
+                <div class="p-2 bg-light rounded border">
+                    <i class="bi bi-clock me-2"></i> <span id="detail-created"></span>
+                </div>
+             </div>
+
+             <div class="col-12">
+                <label class="small text-muted fw-bold">Chủ đề</label>
+                <input type="text" class="form-control" id="detail-subject" readonly>
+             </div>
+
+             <div class="col-12">
+                <label class="small text-muted fw-bold">Nội dung câu hỏi</label>
+                <textarea class="form-control bg-white" id="detail-message" rows="3" readonly></textarea>
+             </div>
+             
+             <div class="col-12 d-flex justify-content-between align-items-center mt-2">
+                <div>
+                    <span class="fw-bold">Trạng thái: </span> 
+                    <span id="detail-status-badge"></span>
+                </div>
+             </div>
+             
+             <div class="col-12 border-top pt-3 mt-2">
+                <label class="fw-bold mb-2"><i class="bi bi-pencil-fill me-2"></i>Nội dung phản hồi (Gửi Email):</label>
+                <textarea class="form-control" id="reply-response" rows="4" placeholder="Nhập nội dung trả lời tại đây..."></textarea>
+             </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="button" class="btn btn-success" id="btn-send-reply" onclick="submitReply()">
+            <i class="bi bi-send-fill me-1"></i> Gửi phản hồi
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    const token = localStorage.getItem("access_token");
+    const API_URL = "https://api.ducmanhsuncloud.click";
+    let allSupportsData = [];
+    let currentTicket = null; // Biến lưu ticket đang xem để gửi API
+
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!token) {
+         window.location.href = "../home.html";
+         return;
+      }
+
+      document.getElementById("display-admin-name").innerText = localStorage.getItem("ADMINNAME") || "Admin";
+      document.getElementById("today-date").innerText = new Date().toLocaleDateString("vi-VN", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById("admin-avatar").onclick = () => window.location.href = "admin_info.html";
+
+      loadSupports();
+    });
+
+    async function loadSupports() {
+      const tbody = document.getElementById("support-table-body");
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Đang tải danh sách...</p></td></tr>`;
+
+      try {
+        const response = await fetch(`${API_URL}/admin/supports`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        
+        if (!response.ok) throw new Error("Lỗi tải dữ liệu");
+
+        const data = await response.json();
+        allSupportsData = data.reverse(); 
+
+        renderTable(allSupportsData);
+
+      } catch (error) {
+        console.error("Error:", error);
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">Không thể tải dữ liệu</td></tr>`;
+      }
+    }
+
+    function renderTable(data) {
+        const tbody = document.getElementById("support-table-body");
+        tbody.innerHTML = "";
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Không có yêu cầu hỗ trợ nào.</td></tr>`;
+            return;
+        }
+
+        data.forEach(item => {
+            const row = document.createElement("tr");
+            
+            // Format Status
+            let statusBadge = `<span class="badge badge-status bg-status-closed">${item.status}</span>`;
+            if(item.status === 'pending') statusBadge = `<span class="badge badge-status bg-status-pending"><i class="bi bi-hourglass-split"></i> Pending</span>`;
+            if(item.status === 'answered' || item.status === 'resolved') statusBadge = `<span class="badge badge-status bg-status-resolved"><i class="bi bi-check-circle"></i> Đã trả lời</span>`;
+
+            // Format Date
+            const created = new Date(item.created_at).toLocaleString("vi-VN");
+
+            row.innerHTML = `
+              <td><span class="fw-bold text-muted">#${item.id}</span></td>
+              <td>
+                <div class="fw-medium">${item.email}</div>
+                ${item.customer_id ? `<small class="text-muted">Cus ID: ${item.customer_id}</small>` : ''}
+              </td>
+              <td>${item.subject}</td>
+              <td><div class="message-truncate">${item.message}</div></td>
+              <td>${statusBadge}</td>
+              <td class="small text-muted">${created}</td>
+              <td class="text-center">
+                <button class="btn btn-light btn-sm text-primary btn-detail" data-id="${item.id}" title="Xem và Phản hồi">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+              </td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Attach Event Listeners
+        document.querySelectorAll('.btn-detail').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.target.closest('button').dataset.id;
+                showDetail(id);
+            });
+        });
+    }
+
+    // --- 3. SHOW DETAIL MODAL & PREPARE REPLY ---
+    function showDetail(id) {
+        currentTicket = allSupportsData.find(i => i.id == id);
+        if (!currentTicket) return;
+
+        // Điền thông tin vào Modal
+        document.getElementById('detail-id').innerText = currentTicket.id;
+        document.getElementById('detail-email').innerText = currentTicket.email;
+        document.getElementById('detail-customer-id').innerText = currentTicket.customer_id ? `(Thành viên ID: ${currentTicket.customer_id})` : "(Khách vãng lai)";
+        document.getElementById('detail-created').innerText = new Date(currentTicket.created_at).toLocaleString("vi-VN");
+        document.getElementById('detail-subject').value = currentTicket.subject;
+        document.getElementById('detail-message').value = currentTicket.message;
+
+        const statusBadgeDiv = document.getElementById('detail-status-badge');
+        const replyInput = document.getElementById('reply-response');
+        const sendBtn = document.getElementById('btn-send-reply');
+
+        if(currentTicket.status === 'answered' || currentTicket.status === 'closed') {
+            statusBadgeDiv.innerHTML = `<span class="badge bg-success">Đã trả lời</span>`;
+            replyInput.value = "(Vé này đã được phản hồi và đóng lại.)";
+            replyInput.disabled = true;
+            sendBtn.disabled = true;
+            sendBtn.textContent = "Đã hoàn thành";
+        } else {
+            statusBadgeDiv.innerHTML = `<span class="badge bg-warning text-dark">Chờ xử lý</span>`;
+            replyInput.value = "";
+            replyInput.disabled = false;
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = `<i class="bi bi-send-fill me-1"></i> Gửi phản hồi`;
+        }
+
+        new bootstrap.Modal(document.getElementById('ticketDetailModal')).show();
+    }
+
+    async function submitReply() {
+        if (!currentTicket) return;
+        
+        const responseText = document.getElementById('reply-response').value;
+        
+        if (!responseText.trim()) {
+            alert("Vui lòng nhập nội dung phản hồi!");
+            return;
+        }
+
+        if(!confirm("Bạn có chắc chắn muốn gửi email phản hồi này?")) return;
+
+        const sendBtn = document.getElementById('btn-send-reply');
+        const originalBtnText = sendBtn.innerHTML;
+        sendBtn.disabled = true;
+        sendBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang gửi...`;
+
+        const payload = {
+            response: responseText,
+            receiver_email: currentTicket.email,
+            subject: currentTicket.subject, 
+            customer_id: currentTicket.customer_id
+        };
+        console.log("Payload:", payload);
+
+        try {
+            const res = await fetch(`${API_URL}/admin/supports/${currentTicket.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await res.json();
+
+            if (res.ok) {
+                alert(result.message || "Đã gửi phản hồi thành công!");
+                bootstrap.Modal.getInstance(document.getElementById('ticketDetailModal')).hide();
+                loadSupports(); 
+            } else {
+                alert("Lỗi: " + (result.message || result.error || "Không thể gửi."));
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi kết nối server: " + err.message);
+        } finally {
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = originalBtnText;
+        }
+    }
+
+    // --- FILTER FUNCTION ---
+    function filterSupports() {
+        const keyword = document.getElementById("searchInput").value.toLowerCase();
+        const status = document.getElementById("statusFilter").value.toLowerCase();
+
+        const filtered = allSupportsData.filter(item => {
+            const emailMatch = (item.email || "").toLowerCase().includes(keyword);
+            const subjectMatch = (item.subject || "").toLowerCase().includes(keyword);
+            const keywordPass = !keyword || emailMatch || subjectMatch;
+
+            const statusPass = !status || (item.status || "").toLowerCase() === status;
+
+            return keywordPass && statusPass;
+        });
+
+        renderTable(filtered);
+    }
+
+    // --- LOGOUT ---
+    document.getElementById("logoutBtn").onclick = async () => {
+       if(!confirm("Đăng xuất?")) return;
+       try { await fetch(`${API_URL}/logout`, { method: "POST", headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify({ action: "Logout" }) }); } catch(e){}
+       localStorage.clear();
+       window.location.href = "../home.html";
+    };
+
+  </script>
+</body>
+</html>

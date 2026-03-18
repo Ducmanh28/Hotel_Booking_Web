@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán Thẻ Quốc Tế - HotelBooking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    
+    <style>
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+        }
+
+        /* Navbar */
+        .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+
+        /* Payment Card Wrapper */
+        .payment-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        /* Header Gradient */
+        .card-header-custom {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 30px;
+            color: white;
+            text-align: center;
+        }
+
+        /* Card Icons Animation */
+        .card-brands i {
+            font-size: 2rem;
+            margin: 0 10px;
+            opacity: 0.8;
+            transition: transform 0.2s;
+        }
+        .card-brands i:hover {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        /* Form Styling */
+        .form-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-right: none;
+            color: #6c757d;
+        }
+
+        .form-control, .form-select {
+            padding: 12px;
+            border-left: none; /* Nếu có input group */
+            border-color: #dee2e6;
+            transition: all 0.3s;
+        }
+        
+        /* Fix border cho select không có input group */
+        select.form-control {
+            border-left: 1px solid #dee2e6; 
+        }
+
+        .form-control:focus, .form-select:focus {
+            box-shadow: none;
+            border-color: #1e3c72;
+        }
+        
+        .input-group:focus-within .input-group-text {
+            border-color: #1e3c72;
+            color: #1e3c72;
+        }
+
+        /* Amount Field Highlight */
+        #totalMoney {
+            background-color: #eef2ff;
+            color: #dc3545;
+            font-weight: 800;
+            font-size: 1.2rem;
+            border: 1px solid #c7d2fe;
+        }
+
+        /* Button */
+        .btn-pay {
+            background: linear-gradient(to right, #11998e, #38ef7d); /* Màu xanh lá an toàn */
+            border: none;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 10px;
+            transition: transform 0.2s;
+            color: white;
+        }
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.3);
+            color: white;
+        }
+
+        /* Security Badge */
+        .security-badge {
+            font-size: 0.85rem;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        /* --- Footer Styles --- */
+        .main-footer {
+            background-color: #f2f2f2; /* Màu xám nhạt như ảnh */
+            color: #333;
+            padding-top: 60px;
+            padding-bottom: 40px;
+            font-size: 0.95rem;
+        }
+        .footer-heading {
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            color: #212529;
+        }
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        .footer-links a {
+            color: #555;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover {
+            color: #0d6efd;
+            padding-left: 5px;
+        }
+        .company-info p {
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .logo-icon {
+            font-size: 3rem;
+            color: #5a67d8; /* Màu xanh tím giống ảnh */
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4" href="home1.html">
+                <i class="fa-solid fa-hotel me-2"></i>HotelBooking
+            </a>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <button class="btn btn-light shadow-sm mb-4 fw-bold text-secondary rounded-pill px-4" onclick="goBack()">
+            <i class="fa-solid fa-arrow-left me-2"></i> Quay lại
+        </button>
+
+        <div class="payment-card">
+            <div class="card-header-custom">
+                <h4 class="fw-bold mb-3">Thanh Toán Thẻ Quốc Tế</h4>
+                <div class="card-brands">
+                    <i class="fa-brands fa-cc-visa"></i>
+                    <i class="fa-brands fa-cc-mastercard"></i>
+                    <i class="fa-brands fa-cc-jcb"></i>
+                </div>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <form id="cardForm">
+                    <div class="mb-4">
+                        <label for="cardType" class="form-label">Chọn loại thẻ</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-regular fa-credit-card"></i></span>
+                            <select id="cardType" class="form-select" required>
+                                <option value="" disabled selected>-- Chọn thẻ --</option>
+                                <option value="VISA">VISA Credit/Debit</option>
+                                <option value="MasterCard">MasterCard</option>
+                                <option value="JCB">JCB</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="cardNumber" class="form-label">Số thẻ</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                            <input type="text" id="cardNumber" class="form-control" placeholder="0000 0000 0000 0000" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="totalMoney" class="form-label">Số tiền thanh toán</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-money-bill-wave text-success"></i></span>
+                            <input type="text" id="totalMoney" class="form-control" readonly>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="description" class="form-label">Nội dung thanh toán</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-pen"></i></span>
+                            <input type="text" id="description" class="form-control" placeholder="Nhập nội dung (không bắt buộc)">
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-5">
+                        <button type="submit" class="btn btn-pay">
+                            XÁC NHẬN THANH TOÁN <i class="fa-solid fa-check ms-2"></i>
+                        </button>
+                    </div>
+
+                    <div class="security-badge">
+                        <i class="fa-solid fa-lock me-2 text-success"></i> Thông tin được mã hóa bảo mật 256-bit SSL
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4 company-info">
+                    <div class="text-center text-md-start">
+                        <i class="fa-solid fa-hotel me-2"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Công ty TNHH Du lịch và Dịch vụ HotelBooking</h5>
+                    <p>Số nhà 25, ngõ 276, đường Minh Khai, Xã An Khánh, TP. Hà Nội</p>
+                    <p>Mã số doanh nghiệp: 0110376372 do Sở Kế hoạch và Đầu tư Thành phố Hà Nội cấp ngày 05/06/2023</p>
+                    <p class="mt-3"><i class="fa-solid fa-phone me-2 text-primary"></i> 0392203920</p>
+                    <p><i class="fa-solid fa-envelope me-2 text-primary"></i> contact@hotelbooking.vn</p>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-heading">GIỚI THIỆU</h6>
+                    <ul class="footer-links">
+                        <li><a href="/BLOG/about.html">Về chúng tôi</a></li>
+                        <li><a href="/BLOG/terms.html">Điều khoản và điều kiện</a></li>
+                        <li><a href="/BLOG/privacy.html">Chính sách riêng tư</a></li>
+                        <li><a href="/BLOG/guide.html">Hướng dẫn sử dụng</a></li>
+                        <li><a href="/BLOG/payment.html">Hình thức thanh toán</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="footer-heading">ĐIỂM ĐẾN</h6>
+                    <ul class="footer-links">
+                        <li><a href="/BLOG/hanoi.html">Hà Nội</a></li>
+                        <li><a href="/BLOG/thanhhoa.html">Thanh Hóa</a></li>
+                        <li><a href="/BLOG/tphcm.html">Thành phố Hồ Chí Minh</a></li>
+                        <li><a href="/BLOG/danang.html">Đà Nẵng</a></li>
+                        <li><a href="/BLOG/phuquoc.html">Phú Quốc</a></li>
+                        <li><a href="/BLOG/vungtau.html">Vũng Tàu</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-heading">CÂU HỎI THƯỜNG GẶP</h6>
+                    <ul class="footer-links">
+                        <li><a href="/BLOG/blog.html">Blog du lịch</a></li>
+                        <li><a href="/BLOG/terms.html">Quy định chung và lưu ý</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center pt-4 mt-4 border-top border-secondary-subtle">
+                <p class="mb-0 small text-muted">&copy; 2024 HotelBooking. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const invoices_id = urlParams.get("invoices_id");
+        const token = localStorage.getItem("access_token");
+        let payAmount = 0;
+
+        async function fetchInvoiceTotal() {
+            try {
+                const res = await fetch(`https://api.ducmanhsuncloud.click/invoices/${invoices_id}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) throw new Error("Lấy thông tin hóa đơn thất bại");
+
+                const data = await res.json();
+                const total = data.total_price || data.invoice?.total_price;
+                
+                // Cập nhật giá trị vào ô input (code cũ)
+                document.getElementById("totalMoney").value = `${Number(total).toLocaleString()} VND`;
+                
+                // Tự động điền description cho tiện người dùng (UI enhancement, không ảnh hưởng logic)
+                document.getElementById("description").value = `Thanh toan hoa don #${invoices_id}`;
+
+                localStorage.setItem("totalmoney", total)
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        fetchInvoiceTotal();
+
+        document.getElementById("cardForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const card_type = document.getElementById("cardType").value;
+            const card_number = document.getElementById("cardNumber").value;
+            const description = document.getElementById("description").value;
+            const total = localStorage.getItem("totalmoney")
+            try {
+                const res = await fetch(`https://api.ducmanhsuncloud.click/payment/card`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        invoices_id,
+                        card_type,
+                        card_number,
+                        total_money: parseFloat(total),
+                        description
+                    })
+                });
+
+                const result = await res.json();
+
+                if (res.ok) {
+                    alert(result.message);
+                    alert("Quay trở về Trang Chủ!")
+                    window.location.href = "home1.html";
+                } else {
+                    alert(`Lỗi: ${result.message}`);
+                }
+            } catch (error) {
+                alert("Lỗi gửi yêu cầu thanh toán.");
+            }
+        });
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

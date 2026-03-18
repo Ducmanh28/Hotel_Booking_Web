@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký tài khoản - HotelBooking</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Main Container */
+        .register-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* Card Register */
+        .card-register {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: none;
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px; /* Rộng hơn để chứa 2 cột */
+            display: flex;
+        }
+
+        /* Left Side (Image) */
+        .register-image {
+            width: 45%;
+            background: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80') center center / cover no-repeat;
+            display: none; /* Ẩn trên mobile */
+            position: relative;
+        }
+        .register-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px;
+            color: white;
+        }
+
+        /* Right Side (Form) */
+        .register-form-container {
+            width: 100%;
+            padding: 40px;
+        }
+
+        @media (min-width: 768px) {
+            .register-image { display: block; }
+            .register-form-container { width: 55%; }
+        }
+
+        /* Form Elements */
+        .form-label {
+            font-weight: 500;
+            color: #4b5563;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-right: none;
+            color: #6c757d;
+        }
+
+        .form-control {
+            border-left: none;
+            padding: 10px;
+            border-color: #dee2e6;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #0d6efd;
+        }
+        
+        .input-group:focus-within .input-group-text {
+            border-color: #0d6efd;
+            color: #0d6efd;
+            background-color: white;
+        }
+
+        /* Button */
+        .btn-register {
+            background: linear-gradient(to right, #0d6efd, #0b5ed7);
+            border: none;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: transform 0.2s;
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+            color: white;
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+        .main-footer { background-color: #f2f2f2; color: #333; padding-top: 60px; padding-bottom: 40px; font-size: 0.95rem; }
+        .footer-heading { font-weight: 700; text-transform: uppercase; margin-bottom: 20px; font-size: 1rem; color: #212529; }
+        .footer-links { list-style: none; padding: 0; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: #555; text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: #0d6efd; padding-left: 5px; }
+        .company-info p { margin-bottom: 8px; color: #666; font-size: 0.9rem; }
+        .logo-icon { font-size: 3rem; color: #5a67d8; margin-bottom: 20px; display: inline-block; }
+        /* OTP Section Animation */
+        #otpSection {
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4" href="home.html">
+                <i class="fa-solid fa-hotel me-2"></i>HotelBooking
+            </a>
+            <div class="ms-auto">
+                <a href="/BLOG/blog.html" class="btn btn-outline-light me-2 rounded-pill px-3">BLOG</a>
+                <a href="/Client/help.html" class="btn btn-outline-light me-2 rounded-pill px-3">
+                    <i class="fa-solid fa-circle-question me-1"></i> Trợ giúp
+                </a>
+                <a href="register.html" class="btn btn-light me-2 rounded-pill px-3">Đăng ký</a>
+                <a href="login.html" class="btn btn-outline-light me-2 rounded-pill px-3">Đăng nhập</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="register-wrapper">
+        <div class="card-register">
+            <div class="register-image">
+                <div class="register-overlay">
+                    <h3 class="fw-bold">Tham gia cùng chúng tôi</h3>
+                    <p class="mb-0">Tạo tài khoản để nhận ưu đãi đặt phòng tốt nhất.</p>
+                </div>
+            </div>
+
+            <div class="register-form-container">
+                
+                <div id="registerSection">
+                    <h3 class="section-title">Đăng Ký</h3>
+                    <p class="text-muted small mb-4">Điền thông tin để tạo tài khoản mới</p>
+                    
+                    <form id="registerForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="username" class="form-label">Tên đăng nhập</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                                    <input type="text" id="username" class="form-control" placeholder="VD: user123" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Số điện thoại</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+                                    <input type="text" id="phone" class="form-control" placeholder="09xxxxxxx" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="email" class="form-label">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                                    <input type="email" id="email" class="form-control" placeholder="name@example.com" required>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="password" class="form-label">Mật khẩu</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                                    
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label for="confirm_password" class="form-label">Xác nhận mật khẩu</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                                    <input type="password" id="confirm_password" class="form-control" placeholder="••••••••" required>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="full_name" class="form-label">Họ và Tên</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-id-card"></i></span>
+                                    <input type="text" id="full_name" class="form-control" placeholder="Nguyễn Văn A" required>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="citizen_id" class="form-label">CCCD/CMND</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-passport"></i></span>
+                                    <input type="text" id="citizen_id" class="form-control" placeholder="Số giấy tờ tùy thân" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-register" onclick="sendRegister()">
+                            ĐĂNG KÝ NGAY <i class="fa-solid fa-arrow-right ms-2"></i>
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <span class="text-muted small">Đã có tài khoản? <a href="login.html" class="text-decoration-none fw-bold">Đăng nhập</a></span>
+                    </div>
+                </div>
+
+                <div id="otpSection" style="display:none; text-align: center; padding-top: 20px;">
+                    <div class="mb-4">
+                        <i class="fa-solid fa-envelope-circle-check fa-4x text-success"></i>
+                    </div>
+                    <h3 class="section-title">Xác thực tài khoản</h3>
+                    <p class="text-muted small mb-4">Mã OTP đã được gửi đến email của bạn. Vui lòng kiểm tra và nhập vào bên dưới.</p>
+                    
+                    <div class="mb-4" style="max-width: 300px; margin: 0 auto;">
+                        <input type="text" id="otp" class="form-control text-center fw-bold fs-4 letter-spacing-2" placeholder="######" maxlength="6">
+                    </div>
+                    
+                    <button onclick="confirmRegister()" class="btn btn-success w-100" style="max-width: 300px;">
+                        XÁC NHẬN OTP
+                    </button>
+                    
+                    <button onclick="location.reload()" class="btn btn-link text-muted mt-3 btn-sm text-decoration-none">Quay lại</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <footer class="main-footer mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4 company-info">
+                    <div class="text-center text-md-start"><i class="fa-solid fa-hotel me-2"></i></div>
+                    <h5 class="fw-bold mb-3">Công ty TNHH Du lịch và Dịch vụ HotelBooking</h5>
+                    <p>Số nhà 25, ngõ 276, đường Minh Khai, Xã An Khánh, TP. Hà Nội</p>
+                    <p>Mã số doanh nghiệp: 0110376372 do Sở Kế hoạch và Đầu tư Thành phố Hà Nội cấp ngày 05/06/2023</p>
+                    <p class="mt-3"><i class="fa-solid fa-phone me-2 text-primary"></i> 0392203920</p>
+                    <p><i class="fa-solid fa-envelope me-2 text-primary"></i> contact@hotelbooking.vn</p>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4"><h6 class="footer-heading">GIỚI THIỆU</h6><ul class="footer-links"><li><a href="/BLOG/about.html">Về chúng tôi</a></li><li><a href="/BLOG/terms.html">Điều khoản và điều kiện</a></li><li><a href="/BLOG/privacy.html">Chính sách riêng tư</a></li><li><a href="/BLOG/guide.html">Hướng dẫn sử dụng</a></li><li><a href="/BLOG/payment.html">Hình thức thanh toán</a></li></ul></div>
+                <div class="col-lg-2 col-md-6 mb-4"><h6 class="footer-heading">ĐIỂM ĐẾN</h6><ul class="footer-links"><li><a href="/BLOG/hanoi.html">Hà Nội</a></li><li><a href="/BLOG/thanhhoa.html">Thanh Hóa</a></li><li><a href="/BLOG/tphcm.html">Thành phố Hồ Chí Minh</a></li><li><a href="/BLOG/danang.html">Đà Nẵng</a></li><li><a href="/BLOG/phuquoc.html">Phú Quốc</a></li><li><a href="/BLOG/vungtau.html">Vũng Tàu</a></li></ul></div>
+                <div class="col-lg-3 col-md-6 mb-4"><h6 class="footer-heading">CÂU HỎI THƯỜNG GẶP</h6><ul class="footer-links"><li><a href="/BLOG/blog.html">Blog du lịch</a></li><li><a href="/BLOG/terms.html">Quy định chung và lưu ý</a></li></ul></div>
+            </div>
+            <div class="text-center pt-4 mt-4 border-top border-secondary-subtle"><p class="mb-0 small text-muted">&copy; 2024 HotelBooking. All rights reserved.</p></div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let userData = {};  
+
+        function sendRegister() {
+            const btn = document.querySelector('.btn-register');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+            btn.disabled = true;
+            
+            if (document.getElementById("password").value !== document.getElementById("confirm_password").value) {
+                alert("Mật khẩu và xác nhận mật khẩu không khớp!");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                return;
+            }
+            userData = {
+                username: document.getElementById("username").value,
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value,
+                phone_number: document.getElementById("phone").value,
+                full_name: document.getElementById("full_name").value,
+                citizen_id: document.getElementById("citizen_id").value
+            };
+
+            fetch("https://api.ducmanhsuncloud.click/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(userData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    // Ẩn form đăng ký, hiện form OTP
+                    document.getElementById("registerSection").style.display = "none";
+                    document.getElementById("otpSection").style.display = "block";
+                } else {
+                    alert(data.error);
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Lỗi kết nối server");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+
+        function confirmRegister() {
+            let otp = document.getElementById("otp").value;
+            if(!otp) { alert("Vui lòng nhập OTP"); return; }
+            
+            userData.otp = otp;  // Thêm OTP vào dữ liệu đăng ký
+
+            fetch("https://api.ducmanhsuncloud.click/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(userData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert("Đăng ký thành công!");
+                    window.location.href = "login.html"; // Chuyển hướng đến trang đăng nhập
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    </script>
+
+</body>
+</html>

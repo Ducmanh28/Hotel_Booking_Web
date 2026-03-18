@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ Cá Nhân - HotelBooking</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    
+    <style>
+        /* --- 1. GLOBAL LAYOUT (Cho phép cuộn toàn trang & Sticky Footer) --- */
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            min-height: 100vh; /* Đảm bảo trang cao ít nhất bằng màn hình */
+            display: flex;
+            flex-direction: column;
+            /* Đã XÓA overflow: hidden để body cuộn tự nhiên */
+        }
+
+        .navbar {
+            background-color: #343a40 !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Container chính */
+        .main-container {
+            flex: 1; /* Đẩy footer xuống đáy */
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+        
+        .row-layout { margin: 0; }
+
+        /* Cột trái & phải */
+        .left-col, .right-col {
+            margin-bottom: 20px;
+        }
+        
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Cards Basic Style */
+        .profile-card, .detail-card, .history-card {
+            background: white;
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            padding: 30px;
+        }
+
+        /* Profile Avatar */
+        .profile-card { text-align: center; }
+        .avatar-circle {
+            width: 100px; height: 100px; background-color: #e9ecef;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 15px; color: #adb5bd; font-size: 40px;
+        }
+
+        /* Info & Edit Form */
+        .info-row {
+            padding: 10px 0; border-bottom: 1px solid #f9f9f9;
+            display: flex; align-items: center; min-height: 50px;
+        }
+        .info-label { width: 140px; font-weight: 600; color: #6c757d; }
+        .info-value { flex: 1; font-weight: 500; color: #212529; }
+
+        .edit-form-container { display: none; padding: 0; margin: 0; border: none; }
+        .edit-row { display: flex; align-items: center; padding: 5px 0; border-bottom: 1px solid #f0f0f0; min-height: 50px; }
+        .edit-row .form-control { border: 1px solid #dee2e6; background-color: #fff; padding: 5px 10px; font-size: 0.95rem; height: 38px; }
+        .edit-row label { width: 140px; font-weight: 600; color: #6c757d; margin: 0; }
+
+        /* --- 4. LỊCH SỬ HÓA ĐƠN (CÓ CUỘN RIÊNG) --- */
+        .history-card {
+            display: flex;
+            flex-direction: column;
+            
+            /* QUAN TRỌNG: Đặt chiều cao giới hạn để kích hoạt thanh cuộn */
+            height: 600px; /* Hoặc dùng max-height: 600px; */
+            
+            overflow: hidden; /* Giữ bo góc */
+        }
+
+        #transaction-history {
+            flex: 1; /* Chiếm hết không gian còn lại trong card */
+            overflow-y: auto; /* BẬT THANH CUỘN DỌC TẠI ĐÂY */
+            padding-right: 10px; /* Tránh nội dung dính thanh cuộn */
+        }
+
+        /* Custom Scrollbar cho phần lịch sử */
+        #transaction-history::-webkit-scrollbar { width: 6px; }
+        #transaction-history::-webkit-scrollbar-track { background: #f1f1f1; }
+        #transaction-history::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        #transaction-history::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+        .list-group-item {
+            border: 1px solid #f0f0f0; border-radius: 12px !important;
+            margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            transition: transform 0.2s;
+        }
+        .list-group-item:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); border-color: #0d6efd; }
+
+        .btn-custom-edit {
+            background-color: #0d6efd; color: white; border-radius: 50px;
+            padding: 8px 25px; font-weight: 600; transition: all 0.3s;
+        }
+        .btn-custom-edit:hover { background-color: #0b5ed7; transform: translateY(-2px); }
+
+        /* --- 5. FOOTER (STICKY BOTTOM) --- */
+        .main-footer {
+            background-color: #f2f2f2;
+            color: #333;
+            padding-top: 60px;
+            padding-bottom: 40px;
+            font-size: 0.95rem;
+            margin-top: auto; /* Đẩy footer xuống đáy */
+        }
+        .footer-heading { font-weight: 700; text-transform: uppercase; margin-bottom: 20px; font-size: 1rem; color: #212529; }
+        .footer-links { list-style: none; padding: 0; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: #555; text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: #0d6efd; padding-left: 5px; }
+        .company-info p { margin-bottom: 8px; color: #666; font-size: 0.9rem; }
+        .logo-icon { font-size: 3rem; color: #5a67d8; margin-bottom: 20px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4" href="home1.html">
+                <i class="fa-solid fa-hotel me-2"></i>HotelBooking
+            </a>
+            <div class="ms-auto">
+                <a href="/BLOG/blog.html" class="btn btn-outline-light me-2 rounded-pill px-3">BLOG</a>
+                <a href="help.html" class="btn btn-outline-light me-2 rounded-pill px-3">
+                    <i class="fa-solid fa-circle-question me-1"></i> Trợ giúp
+                </a>
+                <a href="user.html" class="btn btn-outline-light me-2 rounded-pill px-3 active">
+                    <i class="fa-solid fa-user me-1"></i> Cá nhân
+                </a>
+                <button id="logoutBtn" class="btn btn-danger btn-sm rounded-pill px-3">
+                    <i class="fa-solid fa-right-from-bracket me-1"></i> Đăng Xuất
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-container">
+        <div style="position: absolute; top: 80px; left: 20px; z-index: 100;">
+            <button class="btn btn-light shadow-sm fw-bold text-secondary rounded-pill" onclick="goBack()">
+                <i class="fa-solid fa-arrow-left"></i> Quay Lại
+            </button>
+        </div>
+
+        <div class="row row-layout g-4">
+            
+            <div class="col-lg-4 mb-4">
+    <div class="profile-card d-flex flex-column align-items-center text-center">
+            
+        <div class="avatar-circle mb-3">
+            <i class="fa-solid fa-user"></i>
+        </div>
+            
+        <h4 class="fw-bold mb-1" id="display_fullname">Đang tải...</h4>
+        <p class="text-muted mb-4" id="display_email">...</p>
+            
+        <button id="editBtn" class="btn btn-custom-edit w-100 shadow-sm" onclick="enableEditMode()">
+            <i class="fa-solid fa-pen-to-square me-2"></i>Chỉnh sửa hồ sơ
+        </button>
+    </div>
+    </div>
+            <div class="col-lg-8 right-col">
+                
+                <div class="detail-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold border-start border-4 border-primary ps-3 m-0">Thông Tin Cá Nhân</h5>
+                        <div id="formActions" style="display: none;">
+                            <button type="button" id="cancelBtn" class="btn btn-sm btn-secondary rounded-pill px-3 me-2">Hủy</button>
+                            <button type="button" id="saveTriggerBtn" class="btn btn-sm btn-success rounded-pill px-3">Lưu</button>
+                        </div>
+                    </div>
+                    
+                    <div id="user-info">
+                        <div class="info-row">
+                            <span class="info-label"><i class="fa-solid fa-id-badge me-2 text-primary"></i>Username:</span>
+                            <span class="info-value" id="username">Loading...</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label"><i class="fa-solid fa-user me-2 text-primary"></i>Họ tên:</span>
+                            <span class="info-value" id="full_name">Loading...</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label"><i class="fa-solid fa-envelope me-2 text-primary"></i>Email:</span>
+                            <span class="info-value" id="email">Loading...</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label"><i class="fa-solid fa-phone me-2 text-primary"></i>SĐT:</span>
+                            <span class="info-value" id="phone">Loading...</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label"><i class="fa-solid fa-cake-candles me-2 text-primary"></i>Ngày sinh:</span>
+                            <span class="info-value" id="birth_date">Loading...</span>
+                        </div>
+                        <div class="info-row" style="border-bottom: none;">
+                            <span class="info-label"><i class="fa-solid fa-location-dot me-2 text-primary"></i>Địa chỉ:</span>
+                            <span class="info-value" id="current_address">Loading...</span>
+                        </div>
+                    </div>
+
+                    <div class="edit-form-container" id="editForm">
+                        <form id="actualEditForm">
+                            <div class="edit-row">
+                                <label><i class="fa-solid fa-id-badge me-2 text-muted"></i>Username:</label>
+                                <input type="text" id="new_username" class="form-control" disabled>
+                            </div>
+                            <div class="edit-row">
+                                <label><i class="fa-solid fa-user me-2 text-muted"></i>Họ tên:</label>
+                                <input type="text" id="new_full_name" class="form-control">
+                            </div>
+                            <div class="edit-row">
+                                <label><i class="fa-solid fa-envelope me-2 text-muted"></i>Email:</label>
+                                <input type="email" id="new_email" class="form-control">
+                            </div>
+                            <div class="edit-row">
+                                <label><i class="fa-solid fa-phone me-2 text-muted"></i>SĐT:</label>
+                                <input type="text" id="new_phone" class="form-control">
+                            </div>
+                            <div class="edit-row">
+                                <label><i class="fa-solid fa-cake-candles me-2 text-muted"></i>Ngày sinh:</label>
+                                <input type="date" id="new_birth_date" class="form-control">
+                            </div>
+                            <div class="edit-row" style="border-bottom: none;">
+                                <label><i class="fa-solid fa-location-dot me-2 text-muted"></i>Địa chỉ:</label>
+                                <input type="text" id="new_address" class="form-control">
+                            </div>
+                            <button type="submit" id="submitBtn" style="display: none;"></button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="detail-card history-card">
+                    <h5 class="fw-bold mb-3 border-start border-4 border-warning ps-3 flex-shrink-0">Lịch Sử Đặt Phòng</h5>
+                    
+                    <div id="transaction-history">
+                        <ul id="transaction-list" class="list-group list-group-flush">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-primary spinner-sm" role="status"></div>
+                                <span class="ms-2 small text-muted">Đang tải lịch sử...</span>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="invoiceDetailModal" tabindex="-1" aria-labelledby="invoiceDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold" id="invoiceDetailModalLabel">Chi tiết hóa đơn</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="invoiceDetailContent" class="fs-6"></div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary fw-bold" id="editInvoiceBtn">
+                        <i class="fa-solid fa-pen-to-square me-2"></i>Chỉnh sửa / Gia hạn
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4 company-info">
+                    <div class="text-center text-md-start">
+                        <i class="fa-solid fa-hotel me-2"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Công ty TNHH Du lịch và Dịch vụ HotelBooking</h5>
+                    <p>Số nhà 25, ngõ 276, đường Minh Khai, Xã An Khánh, TP. Hà Nội</p>
+                    <p>Mã số doanh nghiệp: 0110376372 do Sở Kế hoạch và Đầu tư Thành phố Hà Nội cấp ngày 05/06/2023</p>
+                    <p class="mt-3"><i class="fa-solid fa-phone me-2 text-primary"></i> 0392203920</p>
+                    <p><i class="fa-solid fa-envelope me-2 text-primary"></i> contact@hotelbooking.vn</p>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-heading">GIỚI THIỆU</h6>
+                    <ul class="footer-links">
+                        <li><a href="/BLOG/about.html">Về chúng tôi</a></li>
+                        <li><a href="/BLOG/terms.html">Điều khoản và điều kiện</a></li>
+                        <li><a href="/BLOG/privacy.html">Chính sách riêng tư</a></li>
+                        <li><a href="/BLOG/guide.html">Hướng dẫn sử dụng</a></li>
+                        <li><a href="/BLOG/payment.html">Hình thức thanh toán</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="footer-heading">ĐIỂM ĐẾN</h6>
+                    <ul class="footer-links">
+                        <li><a href="/BLOG/hanoi.html">Hà Nội</a></li>
+                        <li><a href="/BLOG/thanhhoa.html">Thanh Hóa</a></li>
+                        <li><a href="/BLOG/tphcm.html">Thành phố Hồ Chí Minh</a></li>
+                        <li><a href="/BLOG/danang.html">Đà Nẵng</a></li>
+                        <li><a href="/BLOG/phuquoc.html">Phú Quốc</a></li>
+                        <li><a href="/BLOG/vungtau.html">Vũng Tàu</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-heading">CÂU HỎI THƯỜNG GẶP</h6>
+                    <ul class="footer-links">
+                        <li><a href="/BLOG/blog.html">Blog du lịch</a></li>
+                        <li><a href="/BLOG/terms.html">Quy định chung và lưu ý</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center pt-4 mt-4 border-top border-secondary-subtle">
+                <p class="mb-0 small text-muted">&copy; 2024 HotelBooking. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Lấy user_id từ localStorage
+        const userId = localStorage.getItem('customer_id');
+        const accessToken = localStorage.getItem('access_token');
+        let selectedServices = [];
+
+        // 1. GET User Info
+        fetch(`https://api.ducmanhsuncloud.click/customers/${userId}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Điền dữ liệu vào phần hiển thị (VIEW)
+            document.getElementById('username').textContent = data.username;
+            document.getElementById('email').textContent = data.email;
+            document.getElementById('phone').textContent = data.phone_number;
+            document.getElementById('full_name').textContent = data.full_name;
+            document.getElementById('display_fullname').textContent = data.full_name || data.username;
+            document.getElementById('display_email').textContent = data.email;
+
+            const birthDateElement = document.getElementById('birth_date');
+            if (data.birth_date) {
+                birthDateElement.textContent = formatDateToDDMMYYYY(data.birth_date);
+            } else {
+                birthDateElement.textContent = "Chưa cập nhật";
+            }
+            document.getElementById('current_address').textContent = data.current_address || "Chưa cập nhật";
+
+            // Lưu vào Storage để dùng khi edit
+            localStorage.setItem('username', data.username);
+            localStorage.setItem('email', data.email);
+            localStorage.setItem('phone', data.phone_number);
+            localStorage.setItem('full_name', data.full_name);
+            localStorage.setItem('birth_date', data.birth_date);
+            localStorage.setItem('current_address', data.current_address);
+        })
+        .catch(error => { console.error('Error fetching user data:', error); });
+
+        // --- XỬ LÝ GIAO DIỆN CHỈNH SỬA (UI LOGIC) ---
+        
+        // Khi bấm nút "Chỉnh sửa hồ sơ"
+        document.getElementById('editBtn').addEventListener('click', function() {
+            // Ẩn phần View, Hiện phần Edit
+            document.getElementById('user-info').style.display = 'none';
+            document.getElementById('editForm').style.display = 'block';
+            
+            // Ẩn nút Edit chính, Hiện nút Lưu/Hủy
+            document.getElementById('editBtn').style.display = 'none';
+            document.getElementById('formActions').style.display = 'block';
+
+            // Điền dữ liệu hiện tại vào ô Input
+            document.getElementById('new_username').value = localStorage.getItem('username');
+            document.getElementById('new_email').value = localStorage.getItem('email');
+            document.getElementById('new_phone').value = localStorage.getItem('phone');
+            document.getElementById('new_full_name').value = localStorage.getItem('full_name');
+            document.getElementById('new_birth_date').value = localStorage.getItem('birth_date');
+            document.getElementById('new_address').value = localStorage.getItem('current_address');
+        });
+
+        // Khi bấm nút "Hủy"
+        document.getElementById("cancelBtn").addEventListener("click", function () {
+            // Quay lại trạng thái cũ
+            document.getElementById("editForm").style.display = "none";
+            document.getElementById("user-info").style.display = "block";
+            document.getElementById('editBtn').style.display = 'block';
+            document.getElementById('formActions').style.display = 'none';
+        });
+
+        // Khi bấm nút "Lưu" (Trigger submit form)
+        document.getElementById("saveTriggerBtn").addEventListener("click", function() {
+            document.getElementById("submitBtn").click();
+        });
+
+        // Submit Form Logic (Giữ nguyên)
+        document.getElementById('actualEditForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+        
+            const newUsername = document.getElementById('new_username').value || localStorage.getItem('username');
+            const newEmail = document.getElementById('new_email').value || localStorage.getItem('email');
+            const newPhone = document.getElementById('new_phone').value || localStorage.getItem('phone');
+            const newFullName = document.getElementById('new_full_name').value || localStorage.getItem('full_name');
+            const newBirthDate = document.getElementById('new_birth_date').value || localStorage.getItem('birth_date');
+            const newAddress = document.getElementById('new_address').value || localStorage.getItem('current_address');
+        
+            try {
+                const res = await fetch(`https://api.ducmanhsuncloud.click/customers/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({
+                        username: newUsername,
+                        email: newEmail,
+                        phone: newPhone,
+                        full_name: newFullName,
+                        birth_date: newBirthDate,
+                        current_address: newAddress
+                    })
+                });
+        
+                const data = await res.json();
+        
+                if (data.message) {
+                    alert(data.message);
+                    // Log Action
+                    await fetch(`https://api.ducmanhsuncloud.click/admin/logs`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${accessToken}`
+                        },
+                        body: JSON.stringify({
+                            customer_id: userId,
+                            action: "Update User"
+                        })
+                    }).catch(err => console.error("Lỗi gửi log:", err));
+                    
+                    location.reload();
+                } else {
+                    // Fallback
+                    localStorage.setItem('username', newUsername);
+                    location.reload();
+                }
+        
+            } catch (error) {
+                console.error('Error updating user data:', error);
+                alert('Không thể cập nhật thông tin người dùng');
+            }
+        });
+
+        function goBack() { window.history.back(); };
+
+        // 2. GET Invoice List
+        fetch(`https://api.ducmanhsuncloud.click/customer/${userId}/invoices`, {  
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const transactionList = document.getElementById("transaction-list");
+            transactionList.innerHTML = ""; 
+            if (Array.isArray(data)) {
+                data.sort((a, b) => b.id - a.id);
+            }
+            if (Array.isArray(data) && data.length > 0) {
+                data.forEach(transaction => {
+                    const listItem = document.createElement("li");
+                    listItem.classList.add("list-group-item");
+        
+                    const canProceedToPayment = transaction.state === 'CHUA THANH TOAN';
+                    const checkInDate = new Date(transaction.check_in);
+                    const currentDate = new Date();
+                    const oneDayBeforeCheckIn = new Date(checkInDate);
+                    oneDayBeforeCheckIn.setDate(checkInDate.getDate() - 1);
+                    
+                    let paymentReminder = '';
+                    if (currentDate.toLocaleDateString() === oneDayBeforeCheckIn.toLocaleDateString() && canProceedToPayment) {
+                        paymentReminder = `<div class="alert alert-danger py-2 mt-2 mb-0"><i class="fa-solid fa-triangle-exclamation me-2"></i>Hóa đơn ${transaction.id} sắp hết hạn!</div>`;
+                    }
+                    
+                    listItem.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <div>
+                                <h6 class="fw-bold mb-1 text-primary">Hóa đơn #${transaction.id}</h6>
+                                <small class="text-muted"><i class="fa-regular fa-clock me-1"></i>Cập nhật: ${new Date(transaction.updated_at).toLocaleDateString()}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge ${transaction.state === 'DA THANH TOAN' ? 'bg-success' : (transaction.state === 'CHUA THANH TOAN' ? 'bg-warning text-dark' : 'bg-secondary')} mb-1">${transaction.state}</span>
+                                <div class="fw-bold text-dark">${Number(transaction.total_price).toLocaleString()} VND</div>
+                            </div>
+                        </div>
+                        ${paymentReminder}
+                        <div class="d-flex gap-2 mt-3 pt-2 border-top">
+                            <button class="btn btn-outline-info btn-sm flex-grow-1" onclick="viewInvoiceDetails(${transaction.id})">
+                                <i class="fa-solid fa-eye me-1"></i>Chi tiết
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="deletedInvoiceDetails(${transaction.id})">
+                                <i class="fa-solid fa-trash me-1"></i>Hủy
+                            </button>
+                            ${canProceedToPayment ? `<a href="payment.html?invoice_id=${transaction.id}" class="btn btn-primary btn-sm flex-grow-1"><i class="fa-regular fa-credit-card me-1"></i>Thanh toán</a>` : ''}
+                        </div>
+                    `;
+                    transactionList.appendChild(listItem);
+                });
+            } else {
+                const noTransactionsMessage = document.createElement("li");
+                noTransactionsMessage.classList.add("list-group-item", "text-center", "py-4", "text-muted");
+                noTransactionsMessage.innerHTML = "<i class='fa-solid fa-receipt fa-2x mb-2'></i><br>Không có giao dịch nào.";
+                transactionList.appendChild(noTransactionsMessage);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching transaction data:', error);
+            document.getElementById("transaction-list").innerHTML = "<li class='list-group-item text-danger'>Lỗi tải dữ liệu</li>";
+        });
+
+        // --- Các hàm Logic hóa đơn giữ nguyên ---
+        function viewInvoiceDetails(invoiceId) {
+            localStorage.setItem("invoiceid", invoiceId);
+            fetch(`https://api.ducmanhsuncloud.click/invoices/${invoiceId}`, {  
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            })
+            .then(response => response.json())
+            .then(data => {
+                localStorage.setItem("room_id", data.room_type_id);
+                return Promise.all([
+                    fetch(`https://api.ducmanhsuncloud.click/customers/${data.customer_id}`, { headers: { 'Authorization': `Bearer ${accessToken}` } }),
+                    fetch(`https://api.ducmanhsuncloud.click/hotels/${data.hotel_id}`, { headers: { 'Authorization': `Bearer ${accessToken}` } }),
+                    fetch(`https://api.ducmanhsuncloud.click/invoices/${invoiceId}/additionalservices`, { headers: { 'Authorization': `Bearer ${accessToken}` } }),
+                    fetch(`https://api.ducmanhsuncloud.click/roomtypes/${data.room_type_id}`, { headers: { 'Authorization': `Bearer ${accessToken}` } })
+                ])
+                .then(responses => Promise.all(responses.map(response => response.json())))
+                .then(([customerData, hotelData, additionalDataList, roomData]) => {
+                    const customerName = customerData.full_name;
+                    const customer_type_Id = customerData.customer_type;
+                    const roomname = roomData.name;
+                    const roomprice = roomData.price;
+                    const hotelName = hotelData.name;
+                    
+                    fetch(`https://api.ducmanhsuncloud.click/customer/discounts/${customer_type_Id}`, { headers: { 'Authorization': `Bearer ${accessToken}` } })
+                    .then(r => r.json()).then(d => {
+                        localStorage.setItem("C_T_N", d.customer_type);
+                        localStorage.setItem("D_N", d.discount);
+                    });
+
+                    let additionalName = "Không có dịch vụ nào";
+                    if (Array.isArray(additionalDataList) && additionalDataList.length > 0) {
+                        const names = additionalDataList.map(service => service.service_name);
+                        additionalName = names.join(", ");
+                    }
+                    
+                    localStorage.setItem("additionalsvn", additionalName);
+                    localStorage.setItem("customerName", customerName);
+                    localStorage.setItem("hotelName", hotelName);
+                    localStorage.setItem("roomName", roomname);
+                    localStorage.setItem("roomPrice", roomprice);
+                    localStorage.setItem("checkIn", data.check_in);
+                    localStorage.setItem("checkOut", data.check_out);
+                    localStorage.setItem("totalPrice", data.total_price);
+                    localStorage.setItem("status", data.state);
+                    localStorage.setItem("createDate", data.create_at);
+                    localStorage.setItem("updateDate", data.updated_at);
+
+                    const modalContent = document.getElementById("invoiceDetailContent");
+                    modalContent.innerHTML = `
+                        <div class="row g-3">
+                            <div class="col-6"><small class="text-muted">Mã hóa đơn</small><div class="fw-bold">#${data.id}</div></div>
+                            <div class="col-6"><small class="text-muted">Trạng thái</small><div class="fw-bold text-primary">${data.state}</div></div>
+                            <div class="col-12 border-top pt-2 mt-2"></div>
+                            <div class="col-6"><small class="text-muted">Người đặt</small><div>${customerName}</div></div>
+                            <div class="col-6"><small class="text-muted">Cấp TV</small><div>${localStorage.getItem("C_T_N") || 'Thường'}</div></div>
+                            <div class="col-12"><small class="text-muted">Khách sạn</small><div class="fw-bold fs-5">${hotelName}</div></div>
+                            <div class="col-12"><small class="text-muted">Loại phòng</small><div>${roomname} (${Number(roomprice).toLocaleString()} VNĐ/đêm)</div></div>
+                            <div class="col-6"><small class="text-muted">Check-in</small><div>${new Date(data.check_in).toLocaleDateString()}</div></div>
+                            <div class="col-6"><small class="text-muted">Check-out</small><div>${new Date(data.check_out).toLocaleDateString()}</div></div>
+                            <div class="col-12"><small class="text-muted">Dịch vụ thêm</small><div class="fst-italic">${additionalName}</div></div>
+                            <div class="col-12 border-top pt-2 mt-2"></div>
+                            <div class="col-6"><small class="text-muted">Giảm giá</small><div>${localStorage.getItem("D_N") || 0}%</div></div>
+                            <div class="col-6"><small class="text-muted">Đã thanh toán</small><div id="paidAmount" class="text-success fw-bold">...</div></div>
+                            <div class="col-12 bg-light p-3 rounded text-center mt-2">
+                                <small class="text-muted d-block">TỔNG CỘNG</small>
+                                <div class="fs-4 fw-bold text-danger">${Number(data.total_price).toLocaleString()} VND</div>
+                            </div>
+                        </div>
+                    `;
+
+                    if (data.state === "DA THANH TOAN") {
+                        fetch(`https://api.ducmanhsuncloud.click/payment/${data.id}`, { headers: { 'Authorization': `Bearer ${accessToken}` } })
+                        .then(res => res.ok ? res.json() : Promise.reject())
+                        .then(pd => { document.getElementById("paidAmount").textContent = `${Number(pd.total_money).toLocaleString()} VND`; })
+                        .catch(() => { document.getElementById("paidAmount").textContent = "Không lấy được TT"; });
+                    } else {
+                        document.getElementById("paidAmount").textContent = "0 VND";
+                    }                    
+                    
+                    new bootstrap.Modal(document.getElementById('invoiceDetailModal')).show();
+                });
+            })
+            .catch(error => { console.error('Error:', error); alert('Không thể lấy thông tin chi tiết'); });
+        }
+        
+        document.getElementById("editInvoiceBtn").addEventListener("click", function () {
+            const id = localStorage.getItem("invoiceid");
+            if (id) {
+                const checkIn = localStorage.getItem("checkIn");
+                const checkOut = localStorage.getItem("checkOut");
+                const totalPrice = localStorage.getItem("totalPrice");
+                const currentDate = new Date();
+                const checkInDate = new Date(checkIn);
+                
+                if (checkInDate < currentDate) {
+                    alert("Hóa đơn đã hết hạn hoặc đã qua ngày check-in, không thể sửa.");
+                    return; 
+                }
+
+                fetch("https://api.ducmanhsuncloud.click/additionalservices", {
+                    method: "GET", headers: { "Authorization": `Bearer ${accessToken}` }
+                })
+                .then(response => response.json())
+                .then(allServices => {
+                    ALLSERVICES = allServices;
+                    const selectedServices = localStorage.getItem("additionalsvn")?.split(",").map(s => s.trim()) || [];
+                    const servicesHTML = allServices.map(service => {
+                        const isChecked = selectedServices.includes(service.service_name) ? 'checked' : '';
+                        return `
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="${service.service_name}" id="service-${service.service_name}" ${isChecked} onchange="toggleService('${service.service_name}', this.checked)">
+                                <label class="form-check-label" for="service-${service.service_name}">${service.service_name} (${Number(service.price).toLocaleString()} VND)</label>
+                            </div>
+                        `;
+                    }).join("");
+                
+                    document.getElementById("invoiceDetailContent").innerHTML = `
+                        <form id="editInvoiceForm">
+                            <div class="mb-2"><label class="small text-muted">Ngày nhận phòng</label><input type="date" id="checkInDate" class="form-control" value="${checkIn.split('T')[0]}" /></div>
+                            <div class="mb-2"><label class="small text-muted">Ngày trả phòng</label><input type="date" id="checkOutDate" class="form-control" value="${checkOut.split('T')[0]}" /></div>
+                            <div class="mb-2 border p-2 rounded"><label class="small text-muted d-block mb-2">Dịch vụ đi kèm:</label>${servicesHTML}</div>
+                            <div class="alert alert-info py-2"><strong>Tạm tính:</strong> <span id="totalPricePreview">${Number(totalPrice).toLocaleString()} VND</span></div>
+                            <button type="button" id="saveBtn" class="btn btn-success w-100">Lưu thay đổi</button>
+                        </form>
+                    `;
+                    
+                    document.getElementById("checkInDate").addEventListener("change", updateTotalPricePreview);
+                    document.getElementById("checkOutDate").addEventListener("change", updateTotalPricePreview);
+                    document.querySelectorAll('.form-check-input').forEach(cb => { cb.addEventListener("change", updateTotalPricePreview); });
+                    
+                    document.getElementById("saveBtn").addEventListener("click", function() {
+                         const checkInDate = new Date(document.getElementById("checkInDate").value);
+                         const checkOutDate = new Date(document.getElementById("checkOutDate").value);
+                         const timeDiff = checkOutDate - checkInDate;
+                         const numDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); 
+                         const roomPrice = parseFloat(localStorage.getItem("roomPrice").replace(/,/g, "")) || 0;
+                         const discount = (parseFloat(localStorage.getItem("D_N")) || 0) / 100;
+                         const checkedServices = Array.from(document.querySelectorAll('.form-check-input:checked')).map(input => input.value);
+                         let additionalPrice = 0;
+                         checkedServices.forEach(name => {
+                             const matchedService = ALLSERVICES.find(s => s.service_name === name);
+                             if (matchedService) additionalPrice += parseFloat(matchedService.price) || 0;
+                         });
+                         const baseTotal = roomPrice * numDays + additionalPrice;
+                         const total = baseTotal - (discount * baseTotal / 100);
+
+                         if (numDays <= 0) { alert("Ngày trả phòng phải sau ngày nhận phòng"); return; }
+                         
+                         fetch(`https://api.ducmanhsuncloud.click/invoices/${id}`, {
+                             method: 'PUT',
+                             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+                             body: JSON.stringify({
+                                 check_in: document.getElementById("checkInDate").value,
+                                 check_out: document.getElementById("checkOutDate").value,
+                                 additional_services: checkedServices,
+                                 total_price: total,
+                                 state: localStorage.getItem("status")
+                             })
+                         })
+                         .then(response => { if (!response.ok) throw new Error("Cập nhật thất bại"); return response.json(); })
+                         .then(data => { alert(data.message); location.reload(); })
+                         .catch(error => { console.error('Error:', error); alert('Cập nhật thất bại'); });
+                    });
+                });
+            }
+        });
+
+        function updateTotalPricePreview() {
+            const checkIn = new Date(document.getElementById("checkInDate").value);
+            const checkOut = new Date(document.getElementById("checkOutDate").value);
+            const roomPrice = parseFloat(localStorage.getItem("roomPrice").replace(/,/g, "")) || 0;
+            const discount = (parseFloat(localStorage.getItem("D_N")) || 0) / 100;
+            const timeDiff = checkOut - checkIn;
+            const dayCount = timeDiff > 0 ? timeDiff / (1000 * 3600 * 24) : 0;
+            const checkedServices = Array.from(document.querySelectorAll('.form-check-input:checked')).map(cb => cb.value);
+            let totalServicePrice = 0;
+            checkedServices.forEach(name => {
+                const service = ALLSERVICES.find(s => s.service_name === name);
+                if (service) totalServicePrice += parseFloat(service.price) || 0;
+            });
+            const subtotal = (roomPrice * dayCount) + totalServicePrice;
+            const total = subtotal * (1 - discount);
+            document.getElementById("totalPricePreview").textContent = `${total.toLocaleString()} VND`;
+        }
+
+        function toggleService(serviceName, isChecked) {
+            if (isChecked) { if (!selectedServices.includes(serviceName)) selectedServices.push(serviceName); } 
+            else { selectedServices = selectedServices.filter(name => name !== serviceName); }
+        }
+
+        function deletedInvoiceDetails(invoiceId) {
+            fetch(`https://api.ducmanhsuncloud.click/invoices/${invoiceId}`, {
+                method: 'GET', headers: { 'Authorization': `Bearer ${accessToken}` }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const checkInDate = new Date(data.check_in);
+                const now = new Date();
+                const hoursDifference = (checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60); 
+                if (hoursDifference >= 24 && data.state !== 'DA BI HUY') {
+                    if (confirm("Bạn có chắc chắn muốn hủy hóa đơn này không?")) {
+                        fetch(`https://api.ducmanhsuncloud.click/invoices/${invoiceId}`, {
+                            method: 'DELETE', headers: { 'Authorization': `Bearer ${accessToken}` }
+                        })
+                        .then(response => {
+                            if (response.ok) { alert("Hủy hóa đơn thành công!"); location.reload(); } 
+                            else { alert("Không thể hủy hóa đơn. Vui lòng thử lại."); }
+                        })
+                        .catch(error => { console.error('Error deleting invoice:', error); alert("Có lỗi xảy ra khi hủy hóa đơn."); });
+                    }
+                } else { alert("Không thể hủy hóa đơn vì thời gian nhận phòng còn dưới 24 giờ."); }
+            })
+            .catch(error => { console.error('Error fetching invoice for delete check:', error); alert("Không thể kiểm tra thời gian nhận phòng."); });
+        }
+
+        function formatDateToDDMMYYYY(dateStr) {
+            const [year, month, day] = dateStr.split("-");
+            return `${day}/${month}/${year}`;
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", async function () {
+            const token = localStorage.getItem("access_token");
+            if (!confirm("Bạn có chắc chắn muốn đăng xuất?")) return;
+
+            try {
+                await fetch("https://api.ducmanhsuncloud.click/logout", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ action: "Logout" })
+                });
+            } catch (err) {
+                console.error("Lỗi khi logout:", err);
+            } finally {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("customer_id");
+                localStorage.removeItem("username");
+                localStorage.removeItem("fullnameuser");
+                localStorage.removeItem("emailuser");    
+                window.location.href = "../home.html"; 
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

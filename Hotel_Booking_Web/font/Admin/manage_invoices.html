@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Hóa đơn - Hotel Admin</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  
+  <style>
+    :root {
+      --primary-color: #0d6efd;
+      --sidebar-width: 260px;
+      --bg-color: #f3f4f7;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      overflow-x: hidden;
+    }
+
+    /* Navbar & Sidebar (Đồng bộ) */
+    .navbar {
+      background-color: #fff !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      z-index: 1000;
+      height: 70px;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--primary-color) !important;
+      font-size: 1.5rem;
+    }
+    
+    .sidebar {
+      width: var(--sidebar-width);
+      min-height: calc(100vh - 70px);
+      background-color: #fff;
+      border-right: 1px solid #eee;
+      position: fixed;
+      top: 70px;
+      left: 0;
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+
+    .main-content {
+      margin-left: var(--sidebar-width);
+      margin-top: 70px;
+      padding: 30px;
+      width: calc(100% - var(--sidebar-width));
+    }
+
+    .sidebar .profile {
+      text-align: center;
+      padding: 0 20px 20px 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .sidebar .profile img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid var(--bg-color);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .nav-link {
+      color: #6c757d;
+      font-weight: 500;
+      padding: 12px 25px;
+      margin-bottom: 5px;
+      border-radius: 0 25px 25px 0;
+      transition: all 0.2s;
+      margin-right: 15px;
+    }
+    .nav-link:hover, .nav-link.active {
+      background-color: #e7f1ff;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    .nav-link i { margin-right: 10px; font-size: 1.1rem; }
+
+    /* Custom Cards & Table */
+    .card-custom {
+      background: white;
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .table thead th {
+      background-color: #f8f9fa;
+      border-bottom: 2px solid #e9ecef;
+      color: #495057;
+      font-weight: 600;
+      padding: 15px;
+      white-space: nowrap;
+    }
+    
+    .table tbody td {
+      vertical-align: middle;
+      padding: 15px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .action-btn {
+      width: 32px; height: 32px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      margin: 0 2px;
+      transition: 0.2s;
+    }
+    .action-btn:hover { background-color: #e9ecef; }
+    
+    .search-group { position: relative; }
+    .search-group .form-control { padding-left: 40px; border-radius: 8px; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #adb5bd; }
+
+    /* Badge styles */
+    .badge-status { padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 500; }
+    .bg-paid { background-color: #d1e7dd; color: #0f5132; }
+    .bg-unpaid { background-color: #f8d7da; color: #842029; }
+    .bg-pending { background-color: #fff3cd; color: #664d03; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="admin.html">
+        <i class="bi bi-buildings-fill me-2"></i>Hotel Admin
+      </a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <div class="d-none d-md-block text-muted small" id="today-date"></div>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm px-3 rounded-pill">
+          <i class="bi bi-box-arrow-right me-1"></i> Đăng Xuất
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar d-flex flex-column">
+    <div class="profile">
+      <img src="admin.jpg" alt="Admin Avatar" id="admin-avatar" style="cursor: pointer;"/>
+      <p class="mt-3 mb-0 fw-bold text-dark" id="display-admin-name">Loading...</p>
+      <small class="text-muted">Administrator</small>
+    </div>
+    <nav class="nav flex-column">
+      <a class="nav-link" href="admin.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a class="nav-link" href="manage_users.html"><i class="bi bi-people"></i> Quản lý người dùng</a>
+      <a class="nav-link" href="manage_hotels.html"><i class="bi bi-building"></i> Quản lý khách sạn</a>
+      <a class="nav-link" href="manage_rooms.html"><i class="bi bi-door-open"></i> Quản lý phòng</a>
+      <a class="nav-link" href="manage_services.html"><i class="bi bi-gear"></i> Quản lý dịch vụ</a>
+      <a class="nav-link active" href="manage_invoices.html"><i class="bi bi-receipt"></i> Quản lý hóa đơn</a>
+      <a class="nav-link" href="manage_schedule.html"><i class="bi bi-calendar-check"></i> Quản lý lịch</a>
+      <a class="nav-link" href="manage_supports.html"><i class="bi bi-headset"></i> Hỗ trợ khách hàng</a>
+      <a class="nav-link" href="manage_log.html"><i class="bi bi-journal-text"></i> Xem Log</a>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-bold mb-0">Danh sách Hóa Đơn</h4>
+      <button class="btn btn-primary" id="addInvoicesBtn">
+        <i class="bi bi-plus-lg me-1"></i> Thêm Hóa đơn
+      </button>
+    </div>
+
+    <div class="card-custom">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label text-muted small">Tìm kiếm theo</label>
+          <select class="form-select" id="SearchType">
+            <option value="id">Mã hóa đơn</option>
+            <option value="customers">Tên người dùng</option>
+            <option value="hotels">Tên Khách Sạn</option>
+            <option value="state">Trạng thái (Paid/Unpaid)</option>
+            <option value="total_price">Giá trị (lớn hơn)</option>
+          </select>
+        </div>
+        <div class="col-md-5">
+          <label class="form-label text-muted small">Từ khóa</label>
+          <div class="search-group">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" id="SearchTypeValue" class="form-control" placeholder="Nhập thông tin cần tìm...">
+          </div>
+        </div>
+        <div class="col-md-2">
+          <button type="button" class="btn btn-primary w-100" onclick="searchInvoices()">
+            Tìm kiếm
+          </button>
+        </div>
+        <div class="col-md-2">
+           <button type="button" class="btn btn-light w-100 border" onclick="loadInvoices()">
+            <i class="bi bi-arrow-clockwise me-1"></i> Làm mới
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-custom p-0 overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Khách hàng</th>
+              <th>Khách sạn / Phòng</th>
+              <th>Tổng tiền</th>
+              <th>Trạng thái</th>
+              <th>Đặt cho</th>
+              <th>Ngày cập nhật</th>
+              <th class="text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="invoices-table-body">
+            <tr><td colspan="8" class="text-center py-4 text-muted">Đang tải dữ liệu...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="createInvoiceModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <form id="createServiceForm">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold">Tạo Hóa đơn mới</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Khách sạn</label> 
+                <select class="form-select" id="hotelSelect" name="hotel_id" required>
+                  <option value="">-- Chọn khách sạn --</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Phòng</label> 
+                <select class="form-select" id="RoomSelect" name="room_type_id" required>
+                  <option value="">-- Vui lòng chọn khách sạn trước --</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Ngày nhận phòng</label>
+                <input type="date" name="check_in" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Ngày trả phòng</label>
+                <input type="date" name="check_out" class="form-control" required>
+              </div>
+              
+              <div class="col-12">
+                <label class="form-label fw-bold">Dịch vụ thêm</label>
+                <div id="ServiceCheckboxGroup" class="d-flex flex-wrap gap-3 border p-2 rounded bg-light">
+                   </div>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Đặt cho ai?</label> 
+                <select class="form-select" name="forwho" id="forWhoSelect" required>
+                  <option value="False">Bản thân</option>
+                  <option value="True">Người khác</option>
+                </select>
+              </div>
+              
+              <div class="col-md-8">
+                <div id="otherPersonInfo" class="row g-2" style="display: none;">
+                  <div class="col-6">
+                    <label class="form-label">Họ tên</label>
+                    <input type="text" name="anothercustomer" class="form-control" placeholder="Tên người ở">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">CCCD</label>
+                    <input type="text" name="anotherccid" class="form-control" placeholder="Số CCCD">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-primary px-4">Tạo mới</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="editInvoiceModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <form id="editInvoiceForm">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold">Chỉnh sửa Hóa đơn</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="edit-invoice-id">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label small text-muted">Mã HĐ</label>
+                <input type="text" id="edit-invoiceid" class="form-control bg-light" disabled>
+              </div>
+              <div class="col-md-5">
+                <label class="form-label small text-muted">Người tạo</label>
+                <input type="text" id="edit-customername" class="form-control bg-light" disabled>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small text-muted">Trạng thái</label>
+                <select id="edit-invoicestate" class="form-select">
+                    <option value="CHUA THANH TOAN">Chưa thanh toán</option>
+                    <option value="DA THANH TOAN">Đã thanh toán</option>
+                    <option value="DA BI HUY">Đã bị hủy</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small text-muted">Khách sạn</label>
+                <input type="text" id="edit-hotelname" class="form-control bg-light" disabled>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small text-muted">Phòng</label>
+                <input type="text" id="edit-roomtypename" class="form-control bg-light" disabled>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label small text-muted">Giá phòng</label>
+                <input type="text" id="edit-roomtypeprice" class="form-control bg-light" disabled>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Ngày nhận phòng</label>
+                <input type="date" id="edit-invoicecheckin" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Ngày trả phòng</label>
+                <input type="date" id="edit-invoicecheckout" class="form-control" required>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-bold">Dịch vụ thêm</label> 
+                <div id="editServiceCheckboxGroup" class="d-flex flex-wrap gap-3 border p-2 rounded">
+                  </div>
+              </div>
+              
+              <div class="col-12 text-end">
+                <h5 class="mb-0 text-primary">Tạm tính: <span id="display-total-price">0</span> VND</h5>
+                <input type="hidden" id="edit-invoiceprice">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    const token = localStorage.getItem("access_token");
+    const adminID = localStorage.getItem("customer_id");
+    const API_URL = "https://api.ducmanhsuncloud.click";
+
+    // Format Currency Helper
+    const formatCurrency = (amount) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!token) {
+         window.location.href = "../home.html";
+         return;
+      }
+
+      document.getElementById("display-admin-name").innerText = localStorage.getItem("ADMINNAME") || "Admin";
+      document.getElementById("today-date").innerText = new Date().toLocaleDateString("vi-VN", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById("admin-avatar").onclick = () => window.location.href = "admin_info.html";
+
+      loadInvoices();
+    });
+
+    // --- 1. LOAD INVOICES (Optimized with Promise.all) ---
+    async function loadInvoices() {
+      const tbody = document.getElementById("invoices-table-body");
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Đang tải dữ liệu...</p></td></tr>`;
+
+      try {
+        const response = await fetch(`${API_URL}/admin/invoices`, {
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          }
+        });
+        const invoices = await response.json();
+
+        // [OPTIMIZATION] Fetch all names in parallel instead of one-by-one loop
+        const invoicesWithNames = await Promise.all(invoices.map(async (invoice) => {
+            try {
+                const nameRes = await fetch(`${API_URL}/admin/invoices/get_name`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        customer_id: invoice.customer_id,
+                        hotel_id: invoice.hotel_id,
+                        room_type_id: invoice.room_type_id
+                    })
+                });
+                const names = await nameRes.json();
+                return { ...invoice, names }; 
+            } catch (e) {
+                return { ...invoice, names: {} };
+            }
+        }));
+
+        renderInvoiceTable(invoicesWithNames);
+
+      } catch (error) {
+        console.error("Lỗi:", error);
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4">Không thể tải dữ liệu</td></tr>`;
+      }
+    }
+
+    // --- 2. SEARCH INVOICES ---
+    async function searchInvoices() {
+      const type = document.getElementById("SearchType").value;
+      const typeValue = document.getElementById("SearchTypeValue").value;
+      const tbody = document.getElementById("invoices-table-body");
+
+      if (!typeValue.trim()) {
+          loadInvoices();
+          return;
+      }
+
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>`;
+
+      try {
+          const response = await fetch(`${API_URL}/admin/invoices/find`, {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify({ type: type, type_data: typeValue })
+          });
+          
+          if (!response.ok) throw new Error("Lỗi tìm kiếm");
+          const invoices = await response.json();
+
+          // Reuse the same parallel fetch logic
+          const invoicesWithNames = await Promise.all(invoices.map(async (invoice) => {
+                try {
+                    const nameRes = await fetch(`${API_URL}/admin/invoices/get_name`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                        body: JSON.stringify({ customer_id: invoice.customer_id, hotel_id: invoice.hotel_id, room_type_id: invoice.room_type_id })
+                    });
+                    const names = await nameRes.json();
+                    return { ...invoice, names };
+                } catch (e) { return { ...invoice, names: {} }; }
+          }));
+          
+          renderInvoiceTable(invoicesWithNames);
+
+      } catch (error) {
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4">Không tìm thấy kết quả</td></tr>`;
+      }
+    }
+
+    // --- 3. RENDER TABLE FUNCTION ---
+    function renderInvoiceTable(invoices) {
+        const tbody = document.getElementById("invoices-table-body");
+        tbody.innerHTML = "";
+
+        if (!invoices || invoices.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">Không có dữ liệu</td></tr>`;
+            return;
+        }
+
+        invoices.forEach(invoice => {
+            const row = document.createElement("tr");
+            const names = invoice.names || {};
+            const customerName = names.username || "Unknown";
+            const hotelName = names.hotel_name || "Unknown";
+            const roomName = names.room_type_name || "Unknown";
+            
+            // Status Badge
+            let statusBadge = `<span class="badge badge-status bg-secondary">${invoice.state}</span>`;
+            if(invoice.state === 'Paid') statusBadge = `<span class="badge badge-status bg-paid">Paid</span>`;
+            if(invoice.state === 'Unpaid') statusBadge = `<span class="badge badge-status bg-unpaid">Unpaid</span>`;
+
+            row.innerHTML = `
+              <td><span class="fw-bold text-muted">#${invoice.id}</span></td>
+              <td>${customerName}</td>
+              <td>
+                <div class="fw-medium">${hotelName}</div>
+                <small class="text-muted">${roomName}</small>
+              </td>
+              <td class="text-success fw-bold">${formatCurrency(invoice.total_price)}</td>
+              <td>${statusBadge}</td>
+              <td>${invoice.is_for_someone_else == 1 ? '<span class="badge bg-info">Người khác</span>' : '<span class="badge bg-light text-dark border">Bản thân</span>'}</td>
+              <td><small class="text-muted">${new Date(invoice.updated_at).toLocaleDateString('vi-VN')}</small></td>
+              <td class="text-center">
+                <button class="btn btn-light action-btn btn-edit text-primary" data-id="${invoice.id}" title="Sửa"><i class="bi bi-pencil-square"></i></button>
+                <button class="btn btn-light action-btn btn-delete text-danger" data-id="${invoice.id}" title="Xóa"><i class="bi bi-trash"></i></button>
+              </td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        attachEventListeners();
+    }
+
+    // --- 4. EVENT LISTENERS ---
+    function attachEventListeners() {
+        // Edit Button Logic
+        document.querySelectorAll(".btn-edit").forEach(btn => 
+            btn.addEventListener("click", async (e) => {
+                const id = e.target.closest("button").dataset.id;
+                try {
+                    // Fetch Invoice Info
+                    const res = await fetch(`${API_URL}/invoices/${id}`, {
+                        headers: { "Authorization": `Bearer ${token}` }
+                    });
+                    const invoice = await res.json();
+
+                    // Fetch Names Info
+                    const nameRes = await fetch(`${API_URL}/admin/invoices/get_name`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                        body: JSON.stringify({ customer_id: invoice.customer_id, hotel_id: invoice.hotel_id, room_type_id: invoice.room_type_id })
+                    });
+                    const names = await nameRes.json();
+
+                    // Fetch Room Info (Price)
+                    const roomRes = await fetch(`${API_URL}/roomtypes/${invoice.room_type_id}`, {
+                        headers: { "Authorization": `Bearer ${token}` }
+                    });
+                    const room = await roomRes.json();
+
+                    // Fill Static Data
+                    document.getElementById("edit-invoice-id").value = invoice.id;
+                    document.getElementById("edit-invoiceid").value = invoice.id;
+                    document.getElementById("edit-customername").value = names.username || "";
+                    document.getElementById("edit-hotelname").value = names.hotel_name || "";
+                    document.getElementById("edit-roomtypename").value = names.room_type_name || "";
+                    document.getElementById("edit-roomtypeprice").value = room.price || 0;
+                    document.getElementById("edit-invoicecheckin").value = invoice.check_in;
+                    document.getElementById("edit-invoicecheckout").value = invoice.check_out;
+                    document.getElementById("edit-invoicestate").value = invoice.state;
+
+                    // --- Handle Services & Pricing Logic ---
+                    const room_price = room.price || 0;
+                    
+                    const [allServicesRes, myServicesRes] = await Promise.all([
+                        fetch(`${API_URL}/additionalservices`, { headers: { "Authorization": `Bearer ${token}` } }),
+                        fetch(`${API_URL}/invoices/${id}/additionalservices`, { headers: { "Authorization": `Bearer ${token}` } })
+                    ]);
+                    
+                    const services = await allServicesRes.json();
+                    const selectedServices = await myServicesRes.json();
+                    const selectedIds = selectedServices.map(s => s.service_id);
+
+                    const serviceGroup = document.getElementById("editServiceCheckboxGroup");
+                    serviceGroup.innerHTML = "";
+
+                    services.forEach(service => {
+                        const isChecked = selectedIds.includes(service.id);
+                        serviceGroup.innerHTML += `
+                            <div class="form-check">
+                                <input class="form-check-input additional-service-checkbox" 
+                                       type="checkbox" value="${service.id}" data-price="${service.price}" 
+                                       id="edit-srv-${service.id}" ${isChecked ? "checked" : ""}>
+                                <label class="form-check-label small" for="edit-srv-${service.id}">
+                                    ${service.service_name} (+${service.price/1000}k)
+                                </label>
+                            </div>
+                        `;
+                    });
+
+                    // Pricing Calculation Function
+                    const updatePrice = () => {
+                        const inDate = new Date(document.getElementById("edit-invoicecheckin").value);
+                        const outDate = new Date(document.getElementById("edit-invoicecheckout").value);
+                        const days = Math.max(1, Math.ceil((outDate - inDate) / (1000 * 60 * 60 * 24)));
+                        
+                        let serviceTotal = 0;
+                        document.querySelectorAll(".additional-service-checkbox:checked").forEach(cb => {
+                            serviceTotal += parseInt(cb.dataset.price);
+                        });
+
+                        const total = (room_price * days) + serviceTotal;
+                        document.getElementById("edit-invoiceprice").value = total;
+                        document.getElementById("display-total-price").innerText = formatCurrency(total);
+                    };
+
+                    // Attach change events
+                    document.getElementById("edit-invoicecheckin").onchange = updatePrice;
+                    document.getElementById("edit-invoicecheckout").onchange = updatePrice;
+                    document.getElementById("editServiceCheckboxGroup").onchange = updatePrice;
+
+                    updatePrice(); // Initial calc
+                    new bootstrap.Modal(document.getElementById("editInvoiceModal")).show();
+
+                } catch(err) { alert("Lỗi tải thông tin chi tiết"); console.log(err); }
+            })
+        );
+
+        // Delete Button Logic
+        document.querySelectorAll(".btn-delete").forEach(btn => 
+            btn.addEventListener("click", async (e) => {
+                const id = e.target.closest("button").dataset.id;
+                if(!confirm("Bạn chắc chắn muốn xóa hóa đơn này?")) return;
+                
+                try {
+                    const res = await fetch(`${API_URL}/admin/invoices/${id}`, {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }
+                    });
+                    const result = await res.json();
+                    alert(result.message || "Đã xóa");
+                    
+                    // Log
+                    await logAction("Delete Invoice");
+                    loadInvoices();
+                } catch(err) { alert("Lỗi xóa: " + err.message); }
+            })
+        );
+    }
+
+    // --- 5. CREATE NEW INVOICE LOGIC ---
+    // Load Hotels for Dropdown
+    document.getElementById("addInvoicesBtn").onclick = () => {
+        fetch(`${API_URL}/hotels`, { headers: { "Authorization": `Bearer ${token}` } })
+        .then(res => res.json())
+        .then(data => {
+            const select = document.getElementById("hotelSelect");
+            select.innerHTML = '<option value="">-- Chọn khách sạn --</option>';
+            data.forEach(h => {
+                select.innerHTML += `<option value="${h.id}">${h.name}</option>`;
+            });
+            
+            // Load Services
+            loadCreateServices();
+            new bootstrap.Modal(document.getElementById("createInvoiceModal")).show();
+        });
+    };
+
+    // Load Rooms when Hotel Changed
+    document.getElementById("hotelSelect").onchange = async function() {
+        const hotelId = this.value;
+        const roomSelect = document.getElementById("RoomSelect");
+        roomSelect.innerHTML = '<option value="">Loading...</option>';
+        
+        if(!hotelId) { roomSelect.innerHTML = '<option value="">-- Chọn khách sạn trước --</option>'; return; }
+
+        try {
+            const res = await fetch(`${API_URL}/admin/hotels/${hotelId}/roomtypes`, { headers: { "Authorization": `Bearer ${token}` } });
+            const rooms = await res.json();
+            roomSelect.innerHTML = '<option value="">-- Chọn phòng --</option>';
+            rooms.forEach(r => roomSelect.innerHTML += `<option value="${r.id}">${r.name} (${formatCurrency(r.price)})</option>`);
+        } catch(e) { roomSelect.innerHTML = '<option value="">Lỗi tải phòng</option>'; }
+    };
+
+    async function loadCreateServices() {
+        const res = await fetch(`${API_URL}/additionalservices`);
+        const services = await res.json();
+        const div = document.getElementById("ServiceCheckboxGroup");
+        div.innerHTML = "";
+        services.forEach(s => {
+            div.innerHTML += `
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="${s.id}" id="new-srv-${s.id}">
+                    <label class="form-check-label small" for="new-srv-${s.id}">${s.service_name} (${formatCurrency(s.price)})</label>
+                </div>
+            `;
+        });
+    }
+
+    document.getElementById("forWhoSelect").onchange = function() {
+        document.getElementById("otherPersonInfo").style.display = (this.value === "True") ? "flex" : "none";
+    };
+
+    document.getElementById("createServiceForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        
+        data.additional_services = [];
+        document.querySelectorAll("#ServiceCheckboxGroup input:checked").forEach(cb => data.additional_services.push(cb.value));
+        
+        data.forwho = (data.forwho === "True");
+        if(!data.forwho) { data.anothercustomer = null; data.anotherccid = null; }
+
+        try {
+            const res = await fetch(`${API_URL}/admin/invoices/create`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if (!res.ok) {
+              alert("Tạo thất bại: " + (result.error || result.message));
+              return;
+            }
+            alert(result.message || "Tạo thành công");
+            await logAction("Create Invoice");
+            location.reload();
+        } catch(err) { alert("Lỗi tạo: " + err.message); }
+    });
+
+    document.getElementById("editInvoiceForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const id = document.getElementById("edit-invoice-id").value;
+        
+        const services = [];
+        document.querySelectorAll("#editServiceCheckboxGroup input:checked").forEach(cb => services.push(parseInt(cb.value)));
+
+        const data = {
+            check_in: document.getElementById("edit-invoicecheckin").value,
+            check_out: document.getElementById("edit-invoicecheckout").value,
+            total_price: document.getElementById("edit-invoiceprice").value,
+            state: document.getElementById("edit-invoicestate").value,
+            additional_services: services
+        };
+
+        try {
+            const res = await fetch(`${API_URL}/admin/invoices/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if(!res.ok) throw new Error(result.message);
+            
+            alert("Cập nhật thành công!");
+            await logAction("Update Invoice");
+            location.reload();
+        } catch(err) { alert("Lỗi: " + err.message); }
+    });
+
+    // --- Helper: Log Action ---
+    async function logAction(actionName) {
+        try {
+            await fetch(`${API_URL}/admin/logs`, {
+                method: "POST",
+                headers:{ "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify({ customer_id: adminID, action: actionName })
+            });
+        } catch(e) {}
+    }
+
+    // Logout
+    document.getElementById("logoutBtn").onclick = async () => {
+       if(!confirm("Đăng xuất?")) return;
+       try { await fetch(`${API_URL}/logout`, { method: "POST", headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify({ action: "Logout" }) }); } catch(e){}
+       localStorage.clear();
+       window.location.href = "../home.html";
+    };
+
+  </script>
+</body>
+</html>

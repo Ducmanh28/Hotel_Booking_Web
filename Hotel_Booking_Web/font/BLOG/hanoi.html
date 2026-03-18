@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khám phá Hà Nội - HotelBooking</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; }
+        .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .page-hero {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1599839519698-c449c287a99f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover; background-position: center; color: white; padding: 100px 0; text-align: center; margin-bottom: 40px;
+        }
+        .content-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        h2 { color: #2c3e50; font-weight: 700; margin-bottom: 20px; border-left: 5px solid #0d6efd; padding-left: 15px; }
+        p { color: #555; line-height: 1.8; text-align: justify; }
+        .img-fluid { border-radius: 10px; margin-bottom: 20px; width: 100%; height: 600px; object-fit: cover; }
+        /* Footer Styles */
+        .main-footer { background-color: #f2f2f2; color: #333; padding-top: 60px; padding-bottom: 40px; font-size: 0.95rem; margin-top: auto; }
+        .footer-heading { font-weight: 700; text-transform: uppercase; margin-bottom: 20px; font-size: 1rem; color: #212529; }
+        .footer-links { list-style: none; padding: 0; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: #555; text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: #0d6efd; padding-left: 5px; }
+        .company-info p { margin-bottom: 8px; color: #666; font-size: 0.9rem; }
+        .logo-icon { font-size: 3rem; color: #5a67d8; margin-bottom: 20px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4" href="#" id="brand-link">
+                <i class="fa-solid fa-hotel me-2"></i>HotelBooking
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="ms-auto d-flex align-items-center" id="nav-content">
+                    </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-hero">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Hà Nội - Ngàn Năm Văn Hiến</h1>
+            <p class="lead text-white"">Nơi giao thoa giữa nét cổ kính rêu phong và nhịp sống hiện đại sôi động</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                
+                <div class="content-box">
+                    <p class="lead fw-bold text-center">"Dù có đi bốn phương trời, lòng vẫn nhớ về Hà Nội."</p>
+                    <p>Hà Nội không chỉ là thủ đô của Việt Nam mà còn là nơi lưu giữ hồn thiêng sông núi. Đến với Hà Nội, du khách sẽ được đắm mình trong không gian của những con phố cổ nhuốm màu thời gian, những hồ nước thơ mộng và nền ẩm thực đường phố tinh tế đã được thế giới công nhận.</p>
+                </div>
+
+                <div class="content-box">
+                    <h2>1. Hồ Gươm và Phố Cổ - Trái tim của Thủ đô</h2>
+                    <img src="https://masteriland.vn/wp-content/uploads/2021/08/net-dep-van-hoa-cua-pho-di-bo-ho-guom2-1024x577.jpg" alt="Hồ Gươm" class="img-fluid shadow">
+                    <p>Hồ Hoàn Kiếm (Hồ Gươm) nằm ngay trung tâm thành phố, được ví như lẵng hoa xinh đẹp giữa lòng Hà Nội. Sáng sớm, bạn có thể bắt gặp hình ảnh người dân tập thái cực quyền, chạy bộ quanh hồ trong làn sương mờ ảo.</p>
+                    <img src="https://ik.imagekit.io/tvlk/blog/2023/09/pho-co-ha-noi-1.jpg?tr=dpr-2,w-675" alt="Phố cổ Hà Nội" class="img-fluid shadow">
+                    <p>Ngay cạnh đó là khu Phố Cổ với 36 phố phường. Mỗi con phố mang tên một mặt hàng đặc trưng: Hàng Mã, Hàng Bạc, Hàng Đường... Lang thang trong những ngõ nhỏ, thưởng thức một ly cà phê trứng hay ngắm nhìn những mái ngói rêu phong là trải nghiệm không thể bỏ qua.</p>
+                </div>
+
+                <div class="content-box">
+                    <h2>2. Lăng Bác và Văn Miếu Quốc Tử Giám</h2>
+                    <img src="https://ik.imagekit.io/tvlk/blog/2023/02/lang-chu-tich%E2%80%93ho-chi-minh-2.png" alt="Lăng Bác" class="img-fluid shadow">
+                    <p>Đến Hà Nội, ai cũng mong muốn một lần được vào lăng viếng Bác Hồ tại quảng trường Ba Đình lịch sử. Không gian trang nghiêm nơi đây khiến bất cứ người con đất Việt nào cũng cảm thấy xúc động.</p>
+                    <img src="https://img1.kienthucvui.vn/uploads/2019/08/15/cong-chao-van-mieu_103832597.jpg" alt="Văn Miếu" class="img-fluid shadow">
+                    <p>Cách đó không xa là Văn Miếu - Quốc Tử Giám, trường đại học đầu tiên của Việt Nam. Với kiến trúc cổ kính đặc trưng của triều đại phong kiến, nơi đây lưu giữ những bia tiến sĩ ngàn năm tuổi, là biểu tượng cho truyền thống hiếu học của dân tộc.</p>
+                </div>
+
+                <div class="content-box">
+                    <h2>3. Tinh hoa Ẩm thực Hà Thành</h2>
+                    <img src="https://media.mia.vn/uploads/blog-du-lich/top-19-quan-pho-ha-noi-ngon-nuc-tieng-an-la-ghien-phan-1-01-1639125005.jpg" alt="Phở Hà Nội" class="img-fluid shadow">
+                    <p>Người ta nói "Ăn Bắc, Mặc Nam". Ẩm thực Hà Nội nổi tiếng bởi sự thanh tao và tinh tế. Phở Hà Nội với nước dùng trong veo, ngọt thanh từ xương hầm; Bún chả với thịt nướng than hoa thơm lừng chấm cùng nước mắm chua ngọt; hay Chả cá Lã Vọng đậm đà hương vị thì là, mắm tôm.</p>
+                    <img src="https://statics.vinpearl.com/xoi-com-ha-noi-6_1692091295.jpg" alt="Phở Hà Nội" class="img-fluid shadow">
+                    <p>Đừng quên thử những món quà vặt như Cốm làng Vòng, Kem Tràng Tiền hay một cốc trà đá vỉa hè để cảm nhận trọn vẹn "vị" của Hà Nội.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4 company-info">
+                    <div class="text-center text-md-start"><i class="fa-solid fa-hotel me-2"></i></div>
+                    <h5 class="fw-bold mb-3">Công ty TNHH Du lịch và Dịch vụ HotelBooking</h5>
+                    <p>Số nhà 25, ngõ 276, đường Minh Khai, Xã An Khánh, TP. Hà Nội</p>
+                    <p>Mã số doanh nghiệp: 0110376372 do Sở Kế hoạch và Đầu tư Thành phố Hà Nội cấp ngày 05/06/2023</p>
+                    <p class="mt-3"><i class="fa-solid fa-phone me-2 text-primary"></i> 0392203920</p>
+                    <p><i class="fa-solid fa-envelope me-2 text-primary"></i> contact@hotelbooking.vn</p>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-heading">GIỚI THIỆU</h6>
+                    <ul class="footer-links">
+                        <li><a href="about.html">Về chúng tôi</a></li>
+                        <li><a href="terms.html">Điều khoản và điều kiện</a></li>
+                        <li><a href="privacy.html">Chính sách riêng tư</a></li>
+                        <li><a href="guide.html">Hướng dẫn sử dụng</a></li>
+                        <li><a href="payment.html">Hình thức thanh toán</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="footer-heading">ĐIỂM ĐẾN</h6>
+                    <ul class="footer-links">
+                        <li><a href="hanoi.html">Hà Nội</a></li>
+                        <li><a href="thanhhoa.html">Thanh Hóa</a></li>
+                        <li><a href="danang.html">Đà Nẵng</a></li>
+                        <li><a href="tphcm.html">TP. Hồ Chí Minh</a></li>
+                        <li><a href="phuquoc.html">Phú Quốc</a></li>
+                        <li><a href="vungtau.html">Vũng Tàu</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-heading">CÂU HỎI THƯỜNG GẶP</h6>
+                    <ul class="footer-links">
+                        <li><a href="blog.html">Blog du lịch</a></li>
+                        <li><a href="/Client/help.html">Câu hỏi thường gặp</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center pt-4 mt-4 border-top border-secondary-subtle">
+                <p class="mb-0 small text-muted">&copy; 2024 HotelBooking. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("access_token");
+            const navContent = document.getElementById("nav-content");
+            const brandLink = document.getElementById("brand-link");
+
+            if (token) {
+                brandLink.href = "/Client/home1.html"; 
+                navContent.innerHTML = `
+                    <a href="blog.html" class="btn btn-outline-light me-2 rounded-pill px-3">BLOG</a>
+                    <a href="/Client/help.html" class="btn btn-outline-light me-2 rounded-pill px-3">
+                        <i class="fa-solid fa-circle-question me-1"></i> Trợ giúp
+                    </a>
+                    <a href="/Client/user.html" class="btn btn-outline-light me-2 rounded-pill px-3">
+                        <i class="fa-solid fa-user me-1"></i> Cá nhân
+                    </a>
+                    <button onclick="logout()" class="btn btn-danger rounded-pill px-3">
+                        <i class="fa-solid fa-right-from-bracket me-1"></i> Đăng Xuất
+                    </button>
+                `;
+            } else {
+                brandLink.href = "../home.html"; 
+                navContent.innerHTML = `
+                    <a href="blog.html" class="btn btn-outline-light me-2 rounded-pill px-3 active">BLOG</a>
+                    <a href="/Client/help.html" class="btn btn-outline-light me-2 rounded-pill px-3">
+                        <i class="fa-solid fa-circle-question me-1"></i> Trợ giúp
+                    </a>
+                    <a href="../register.html" class="btn btn-outline-light me-2 rounded-pill px-3">Đăng ký</a>
+                    <a href="../login.html" class="btn btn-outline-light me-2 rounded-pill px-3">Đăng nhập</a>
+                `;
+            }
+        });
+
+        async function logout() {
+            const token = localStorage.getItem("access_token");
+            if (!confirm("Bạn có chắc chắn muốn đăng xuất?")) return;
+
+            try {
+                await fetch("https://api.ducmanhsuncloud.click/logout", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ action: "Logout" })
+                });
+            } catch (err) {
+                console.error("Lỗi khi logout:", err);
+            } finally {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("customer_id");
+                localStorage.removeItem("username");
+                window.location.href = "../home.html"; 
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác Nhận Chuyển Khoản - HotelBooking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    
+    <style>
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+        }
+
+        /* Navbar */
+        .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+
+        /* Main Card */
+        .banking-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .card-header-custom {
+            background: linear-gradient(135deg, #198754 0%, #157347 100%);
+            padding: 30px;
+            color: white;
+            text-align: center;
+        }
+
+        /* Bank Info Box */
+        .bank-info-box {
+            background: linear-gradient(135deg, #2b3595 0%, #10165a 100%);
+            border-radius: 15px;
+            padding: 25px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(43, 53, 149, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bank-logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .account-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .account-name {
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Form Styling */
+        .form-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-right: none;
+            color: #6c757d;
+        }
+
+        .form-control, .form-select {
+            padding: 12px;
+            border-left: none;
+            border-color: #dee2e6;
+            transition: all 0.3s;
+        }
+        
+        /* Fix border left for Select when inside Input Group */
+        .input-group > .form-select {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .form-control:focus, .form-select:focus {
+            box-shadow: none;
+            border-color: #198754;
+        }
+        
+        .input-group:focus-within .input-group-text {
+            border-color: #198754;
+            color: #198754;
+        }
+
+        /* Amount Field */
+        #totalAmount {
+            background-color: #eefdf5;
+            color: #198754;
+            font-weight: 800;
+            font-size: 1.2rem;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Button */
+        .btn-confirm {
+            background: linear-gradient(to right, #198754, #20c997);
+            border: none;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 10px;
+            transition: transform 0.2s;
+            color: white;
+        }
+        .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
+            color: white;
+        }
+        /* --- Footer Styles --- */
+        .main-footer {
+            background-color: #f2f2f2; /* Màu xám nhạt như ảnh */
+            color: #333;
+            padding-top: 60px;
+            padding-bottom: 40px;
+            font-size: 0.95rem;
+        }
+        .footer-heading {
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            color: #212529;
+        }
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        .footer-links a {
+            color: #555;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover {
+            color: #0d6efd;
+            padding-left: 5px;
+        }
+        .company-info p {
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .logo-icon {
+            font-size: 3rem;
+            color: #5a67d8; /* Màu xanh tím giống ảnh */
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4" href="home1.html">
+                <i class="fa-solid fa-hotel me-2"></i>HotelBooking
+            </a>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <button class="btn btn-light shadow-sm mb-4 fw-bold text-secondary rounded-pill px-4" onclick="goBack()">
+            <i class="fa-solid fa-arrow-left me-2"></i> Quay lại
+        </button>
+
+        <div class="banking-card">
+            <div class="card-header-custom">
+                <h4 class="mb-0 fw-bold"><i class="fa-solid fa-money-bill-transfer me-2"></i>Xác Nhận Chuyển Khoản</h4>
+                <p class="mb-0 mt-2 opacity-75">Vui lòng chuyển khoản đến thông tin dưới đây</p>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                
+                <div class="bank-info-box">
+                    <div class="bank-logo">
+                        <i class="fa-solid fa-building-columns me-2"></i> MB Bank
+                    </div>
+                    <div class="account-number">0000 8274 5018</div>
+                    <div class="d-flex justify-content-between align-items-end">
+                        <div class="account-name">LUONG DUC MANH</div>
+                        <div><i class="fa-solid fa-wifi"></i></div>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-3 text-secondary text-uppercase border-bottom pb-2">Thông tin thanh toán của bạn</h6>
+                
+                <div class="mb-4">
+                    <label for="cardtype" class="form-label">Ngân hàng của bạn</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-building-columns"></i></span>
+                        <select id="cardtype" class="form-select" required>
+                            <option value="" selected disabled>-- Chọn ngân hàng --</option>
+                            </select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="cardNumber" class="form-label">Số tài khoản nguồn</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-credit-card"></i></span>
+                        <input type="text" id="cardNumber" class="form-control" placeholder="Nhập số tài khoản của bạn" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Mã Hóa Đơn</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                            <div class="form-control bg-light fw-bold" id="idhoadon">...</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label for="totalAmount" class="form-label">Số tiền cần thanh toán</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-dollar-sign text-success"></i></span>
+                            <input type="text" id="totalAmount" class="form-control" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="description" class="form-label">Nội dung chuyển khoản</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-pen"></i></span>
+                        <input type="text" id="description" class="form-control" placeholder="Nhập nội dung...">
+                    </div>
+                </div>
+
+                <div class="d-grid mt-5">
+                    <button class="btn btn-confirm" onclick="confirmPayment()">
+                        Xác Nhận Đã Chuyển <i class="fa-regular fa-circle-check ms-2"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4 company-info">
+                    <div class="text-center text-md-start">
+                        <i class="fa-solid fa-hotel me-2"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Công ty TNHH Du lịch và Dịch vụ HotelBooking</h5>
+                    <p>Số nhà 25, ngõ 276, đường Minh Khai, Xã An Khánh, TP. Hà Nội</p>
+                    <p>Mã số doanh nghiệp: 0110376372 do Sở Kế hoạch và Đầu tư Thành phố Hà Nội cấp ngày 05/06/2023</p>
+                    <p class="mt-3"><i class="fa-solid fa-phone me-2 text-primary"></i> 0392203920</p>
+                    <p><i class="fa-solid fa-envelope me-2 text-primary"></i> contact@hotelbooking.vn</p>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-heading">GIỚI THIỆU</h6>
+                    <ul class="footer-links">
+                        <li><a href="/BLOG/about.html">Về chúng tôi</a></li>
+                        <li><a href="/BLOG/terms.html">Điều khoản và điều kiện</a></li>
+                        <li><a href="/BLOG/privacy.html">Chính sách riêng tư</a></li>
+                        <li><a href="/BLOG/guide.html">Hướng dẫn sử dụng</a></li>
+                        <li><a href="/BLOG/payment.html">Hình thức thanh toán</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="footer-heading">ĐIỂM ĐẾN</h6>
+                    <ul class="footer-links">
+                        <li><a href="/BLOG/hanoi.html">Hà Nội</a></li>
+                        <li><a href="/BLOG/thanhhoa.html">Thanh Hóa</a></li>
+                        <li><a href="/BLOG/tphcm.html">Thành phố Hồ Chí Minh</a></li>
+                        <li><a href="/BLOG/danang.html">Đà Nẵng</a></li>
+                        <li><a href="/BLOG/phuquoc.html">Phú Quốc</a></li>
+                        <li><a href="/BLOG/vungtau.html">Vũng Tàu</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-heading">CÂU HỎI THƯỜNG GẶP</h6>
+                    <ul class="footer-links">
+                        <li><a href="/BLOG/blog.html">Blog du lịch</a></li>
+                        <li><a href="/BLOG/terms.html">Quy định chung và lưu ý</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center pt-4 mt-4 border-top border-secondary-subtle">
+                <p class="mb-0 small text-muted">&copy; 2024 HotelBooking. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. DANH SÁCH NGÂN HÀNG VIỆT NAM ---
+        const bankList = [
+            { code: "VCB", name: "Vietcombank" },
+            { code: "TCB", name: "Techcombank" },
+            { code: "MB", name: "MBBank" },
+            { code: "VPB", name: "VPBank" },
+            { code: "ACB", name: "ACB (Á Châu)" },
+            { code: "BIDV", name: "BIDV" },
+            { code: "CTG", name: "VietinBank" },
+            { code: "STB", name: "Sacombank" },
+            { code: "VIB", name: "VIB" },
+            { code: "TPB", name: "TPBank" },
+            { code: "HDB", name: "HDBank" },
+            { code: "MSB", name: "MSB (Hàng Hải)" },
+            { code: "OCB", name: "OCB (Phương Đông)" },
+            { code: "SHB", name: "SHB" },
+            { code: "LPB", name: "LienVietPostBank" },
+            { code: "SEAB", name: "SeABank" },
+            { code: "VCCB", name: "VietCapital Bank" },
+            { code: "NAB", name: "Nam A Bank" }
+        ];
+
+        // --- 2. HÀM RENDER DANH SÁCH NGÂN HÀNG ---
+        function renderBankList() {
+            const select = document.getElementById("cardtype");
+            bankList.forEach(bank => {
+                const option = document.createElement("option");
+                // Giá trị gửi về server là Tên ngân hàng (hoặc mã tùy bạn muốn)
+                option.value = bank.name; 
+                option.textContent = `${bank.code} - ${bank.name}`;
+                select.appendChild(option);
+            });
+        }
+
+        // --- CÁC BIẾN TOÀN CỤC ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const invoices_id = urlParams.get('invoice_id');
+        const token = localStorage.getItem('access_token');
+        let payAmount = 0;
+        
+        async function authFetch(url) {
+            const res = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            return res.json();
+        }
+
+        async function loadInvoice() {
+            try {
+                const res = await authFetch(`https://api.ducmanhsuncloud.click/invoices/${invoices_id}`);
+                const invoice = await res;
+                const total = invoice.total_price;
+                const id = Number(invoice.id);
+                document.getElementById("totalAmount").value = `${Number(total).toLocaleString()} VND`;
+                document.getElementById('idhoadon').textContent = id.toLocaleString('vi-VN');
+            } catch (err) {
+                console.error("Lỗi khi tải thông tin hóa đơn:", err);
+                alert("Không thể tải thông tin hóa đơn.");
+            }
+        }
+
+        async function confirmPayment() {
+            const card_type = document.getElementById("cardtype").value; // Lấy giá trị từ Select
+            const card_number = document.getElementById("cardNumber").value;
+            const description = document.getElementById("description").value;
+            const total_money = document.getElementById("totalAmount").value;
+            
+            // Kiểm tra xem đã chọn ngân hàng chưa
+            if (!card_type) {
+                alert("Vui lòng chọn ngân hàng của bạn!");
+                return;
+            }
+
+            try {
+                const conres = await fetch(`https://api.ducmanhsuncloud.click/payment/banking`,{
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        invoices_id,
+                        card_type,
+                        card_number,
+                        total_money: parseFloat(total_money), 
+                        description
+                    })
+                })
+                const result = await conres.json();
+
+                if (conres.ok) {
+                    alert(result.message);
+                    alert("Quay trở về trang chủ")
+                    window.location.href = "home1.html"
+                } else {
+                    alert(`Lỗi: ${result.message}`);
+                }
+            } catch (err) {
+                console.error("Lỗi khi thanh toán hóa đơn!", err);
+                alert("Lỗi khi thanh toán Hóa đơn")
+            }
+        }
+
+        // --- KHỞI CHẠY ---
+        document.addEventListener("DOMContentLoaded", function() {
+            renderBankList(); // Tạo danh sách ngân hàng
+            loadInvoice();    // Tải thông tin hóa đơn
+        });
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

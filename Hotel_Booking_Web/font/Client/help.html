@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trung tâm trợ giúp - HotelBooking</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    
+    <style>
+        /* --- 1. GLOBAL LAYOUT (Cho phép cuộn trang) --- */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #eef2f6;
+            min-height: 100vh; /* Đảm bảo trang luôn cao ít nhất bằng màn hình */
+            display: flex;
+            flex-direction: column;
+            /* Đã XÓA overflow: hidden để cho phép cuộn toàn trang */
+        }
+
+        .navbar {
+            background-color: #343a40 !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Phần giữa: Đẩy footer xuống đáy */
+        .main-wrapper {
+            flex: 1; 
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Căn giữa card theo chiều dọc nếu trang ngắn */
+            padding: 40px 20px;
+        }
+
+        /* --- 2. CARD TRUNG TÂM (Có giới hạn chiều cao) --- */
+        .help-container-card {
+            background: white;
+            width: 100%;
+            max-width: 1200px;
+            
+            /* GIỚI HẠN CHIỀU CAO ĐỂ KÍCH HOẠT CUỘN NỘI BỘ */
+            height: 80vh;  /* Chiếm 80% chiều cao màn hình */
+            min-height: 600px; /* Nhưng không được thấp quá 600px */
+            
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Bo góc mượt mà */
+        }
+
+        .help-card-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+            color: white;
+            padding: 25px 40px;
+            flex-shrink: 0; /* Header luôn hiển thị đầy đủ */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .help-card-body {
+            flex: 1; /* Chiếm phần còn lại của card */
+            overflow: hidden; /* Quan trọng: Để con cái (faq/form) cuộn được bên trong */
+            padding: 0;
+        }
+
+        /* --- 3. VÙNG CUỘN RIÊNG (FAQ & FORM) --- */
+        .row-full-height {
+            height: 100%;
+            margin: 0;
+        }
+
+        .faq-scroll-area {
+            height: 100%;       /* Full chiều cao cha */
+            overflow-y: auto;   /* BẬT CUỘN DỌC RIÊNG CHO CỘT NÀY */
+            padding: 30px;
+            padding-right: 15px; 
+        }
+
+        .form-static-area {
+            height: 100%;
+            padding: 30px;
+            background-color: #f8f9fa;
+            overflow-y: auto;   /* Form cũng cuộn riêng nếu dài quá */
+            border-left: 1px solid #eee;
+        }
+
+        /* Tùy chỉnh thanh cuộn nội bộ cho đẹp */
+        .faq-scroll-area::-webkit-scrollbar, 
+        .form-static-area::-webkit-scrollbar { width: 6px; }
+        .faq-scroll-area::-webkit-scrollbar-track,
+        .form-static-area::-webkit-scrollbar-track { background: transparent; }
+        .faq-scroll-area::-webkit-scrollbar-thumb,
+        .form-static-area::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        .faq-scroll-area::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+        /* Accordion Style */
+        .accordion-button:not(.collapsed) { background-color: #f0f7ff; color: #0d6efd; box-shadow: none; }
+        .accordion-item { border: 1px solid #e9ecef; margin-bottom: 15px; border-radius: 12px !important; overflow: hidden; }
+        .section-title { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #6c757d; margin-bottom: 25px; display: block; }
+
+        /* --- 4. FOOTER (Đẩy xuống dưới cùng) --- */
+        .main-footer {
+            background-color: #f2f2f2;
+            color: #333;
+            padding-top: 60px;
+            padding-bottom: 40px;
+            font-size: 0.95rem;
+            margin-top: auto; /* Kỹ thuật đẩy footer xuống đáy trong Flexbox column */
+        }
+        .footer-heading { font-weight: 700; text-transform: uppercase; margin-bottom: 20px; font-size: 1rem; color: #212529; }
+        .footer-links { list-style: none; padding: 0; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: #555; text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: #0d6efd; padding-left: 5px; }
+        .company-info p { margin-bottom: 8px; color: #666; font-size: 0.9rem; }
+        .logo-icon { font-size: 3rem; color: #5a67d8; margin-bottom: 20px; display: inline-block; }
+
+        /* Responsive: Mobile thì bỏ cuộn riêng, cho cuộn chung cả trang */
+        @media (max-width: 992px) {
+            .help-container-card { height: auto; min-height: 0; }
+            .faq-scroll-area, .form-static-area { height: auto; overflow: visible; }
+            .form-static-area { border-left: none; border-top: 1px solid #eee; }
+        }
+
+        /* Chat Widget */
+        .chat-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: linear-gradient(to right, #0d6efd, #0b5ed7); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 4px 20px rgba(13, 110, 253, 0.4); cursor: pointer; z-index: 1050; transition: transform 0.2s; }
+        .chat-btn:hover { transform: scale(1.1); }
+        .chat-window { position: fixed; bottom: 100px; right: 30px; width: 360px; height: 500px; background: white; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 1050; display: none; flex-direction: column; overflow: hidden; animation: slideUp 0.3s ease; border: 1px solid #f0f0f0; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .chat-header { background: #0d6efd; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .chat-body { flex: 1; padding: 15px; overflow-y: auto; background: #f8f9fa; display: flex; flex-direction: column; gap: 10px; }
+        .message { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; }
+        .message.bot { background: white; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .message.user { background: #0d6efd; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .chat-footer { padding: 10px; background: white; border-top: 1px solid #eee; display: flex; gap: 10px; }
+        .typing-indicator { font-size: 0.75rem; color: #888; font-style: italic; margin-left: 15px; display: none; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4" href="#" id="brand-link">
+                <i class="fa-solid fa-hotel me-2"></i>HotelBooking
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="ms-auto d-flex align-items-center" id="nav-content">
+                    </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <div class="help-container-card">
+            
+            <div class="help-card-header">
+                <div>
+                    <h4 class="mb-0 fw-bold"><i class="fa-solid fa-life-ring me-2"></i>Trung tâm trợ giúp</h4>
+                    <small class="opacity-75">Chúng tôi có thể giúp gì cho bạn?</small>
+                </div>
+                <button class="btn btn-light btn-sm text-primary fw-bold rounded-pill shadow-sm" onclick="goBack()">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Quay lại
+                </button>
+            </div>
+
+            <div class="help-card-body">
+                <div class="row row-full-height g-0">
+                    
+                    <div class="col-lg-7 h-100">
+                        <div class="faq-scroll-area">
+                            <span class="section-title text-primary"><i class="fa-solid fa-book-open me-2"></i>Câu hỏi thường gặp</span>
+                            <div class="accordion accordion-flush" id="faqAccordion">
+                                <div class="text-center py-5 text-muted">
+                                    <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+                                    <br>Đang tải dữ liệu...
+                                </div>
+                            </div>
+                            <div class="mt-5 text-center text-muted small opacity-50">
+                                <i class="fa-solid fa-ellipsis"></i><br>Hết danh sách
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5 h-100">
+                        <div class="form-static-area">
+                            <span class="section-title text-success"><i class="fa-solid fa-envelope me-2"></i>Liên hệ Admin</span>
+                            
+                            <div class="bg-white p-4 rounded-4 shadow-sm border">
+                                <form id="contactForm">
+                                    <div class="mb-3" id="email-field-container" style="display: block;">
+                                        <label class="form-label fw-bold small text-secondary">Email của bạn (*)</label>
+                                        <input type="email" id="contact-email" class="form-control" placeholder="Nhập email để nhận phản hồi">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-secondary">Tiêu đề</label>
+                                        <input type="text" id="subject" class="form-control" placeholder="Vấn đề cần hỗ trợ..." required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-secondary">Nội dung chi tiết</label>
+                                        <textarea id="message" class="form-control" rows="5" placeholder="Mô tả chi tiết..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-success w-100 fw-bold py-2">
+                                        <i class="fa-solid fa-paper-plane me-2"></i>Gửi Yêu Cầu
+                                    </button>
+                                </form>
+                                <div class="mt-3 text-center">
+                                    <small class="text-muted" style="font-size: 0.8rem;">
+                                        <i class="fa-solid fa-clock me-1"></i>Thời gian phản hồi trung bình: 24h
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-btn" onclick="toggleChat()"><i class="fa-solid fa-comments"></i></div>
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <div><i class="fa-solid fa-robot me-2"></i>Trợ lý AI Booking</div>
+            <button type="button" class="btn-close btn-close-white" onclick="toggleChat()"></button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="message bot">Xin chào! 👋<br>Mình là trợ lý ảo AI. Bạn cần giúp gì không?</div>
+        </div>
+        <div class="typing-indicator" id="typingIndicator"><span><i class="fa-solid fa-circle fa-bounce" style="font-size: 6px;"></i> AI đang soạn tin...</span></div>
+        <div class="chat-footer">
+            <input type="text" id="userInput" class="form-control border-0 bg-light" placeholder="Nhập tin nhắn..." onkeypress="handleEnter(event)">
+            <button class="btn btn-primary rounded-circle" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <footer class="main-footer mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4 company-info">
+                    <div class="text-center text-md-start">
+                        <i class="fa-solid fa-hotel me-2"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Công ty TNHH Du lịch và Dịch vụ HotelBooking</h5>
+                    <p>Số nhà 25, ngõ 276, đường Minh Khai, Xã An Khánh, TP. Hà Nội</p>
+                    <p>Mã số doanh nghiệp: 0110376372 do Sở Kế hoạch và Đầu tư Thành phố Hà Nội cấp ngày 05/06/2023</p>
+                    <p class="mt-3"><i class="fa-solid fa-phone me-2 text-primary"></i> 0392203920</p>
+                    <p><i class="fa-solid fa-envelope me-2 text-primary"></i> contact@hotelbooking.vn</p>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-heading">GIỚI THIỆU</h6>
+                    <ul class="footer-links">
+                        <li><a href="/BLOG/about.html">Về chúng tôi</a></li>
+                        <li><a href="/BLOG/terms.html">Điều khoản và điều kiện</a></li>
+                        <li><a href="/BLOG/privacy.html">Chính sách riêng tư</a></li>
+                        <li><a href="/BLOG/guide.html">Hướng dẫn sử dụng</a></li>
+                        <li><a href="/BLOG/payment.html">Hình thức thanh toán</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="footer-heading">ĐIỂM ĐẾN</h6>
+                    <ul class="footer-links">
+                        <li><a href="/BLOG/hanoi.html">Hà Nội</a></li>
+                        <li><a href="/BLOG/thanhhoa.html">Thanh Hóa</a></li>
+                        <li><a href="/BLOG/tphcm.html">Thành phố Hồ Chí Minh</a></li>
+                        <li><a href="/BLOG/danang.html">Đà Nẵng</a></li>
+                        <li><a href="/BLOG/phuquoc.html">Phú Quốc</a></li>
+                        <li><a href="/BLOG/vungtau.html">Vũng Tàu</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-heading">CÂU HỎI THƯỜNG GẶP</h6>
+                    <ul class="footer-links">
+                        <li><a href="/BLOG/blog.html">Blog du lịch</a></li>
+                        <li><a href="/BLOG/terms.html">Quy định chung và lưu ý</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center pt-4 mt-4 border-top border-secondary-subtle">
+                <p class="mb-0 small text-muted">&copy; 2024 HotelBooking. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE_URL = "https://api.ducmanhsuncloud.click";
+        let isLoggedIn = false;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("access_token");
+            const navContent = document.getElementById("nav-content");
+            const brandLink = document.getElementById("brand-link");
+
+            if (token) {
+                brandLink.href = "home1.html"; 
+                navContent.innerHTML = `
+                    <a href="/BLOG/blog.html" class="btn btn-outline-light me-2 rounded-pill px-3">BLOG</a>
+                    <a href="help.html" class="btn btn-outline-light me-2 rounded-pill px-3 active">
+                        <i class="fa-solid fa-circle-question me-1"></i> Trợ giúp
+                    </a>
+                    <a href="user.html" class="btn btn-outline-light me-2 rounded-pill px-3">
+                        <i class="fa-solid fa-user me-1"></i> Cá nhân
+                    </a>
+                    <button onclick="logout()" class="btn btn-danger rounded-pill px-3">
+                        <i class="fa-solid fa-right-from-bracket me-1"></i> Đăng Xuất
+                    </button>
+                `;
+                document.getElementById("contact-email").value = localStorage.getItem("emailuser");
+            } else {
+                brandLink.href = "../home.html"; 
+                navContent.innerHTML = `
+                    <a href="/BLOG/blog.html" class="btn btn-outline-light me-2 rounded-pill px-3">BLOG</a>
+                    <a href="/Client/help.html" class="btn btn-outline-light me-2 rounded-pill px-3 active">
+                        <i class="fa-solid fa-circle-question me-1"></i> Trợ giúp
+                    </a>
+                    <a href="../register.html" class="btn btn-outline-light me-2 rounded-pill px-3">Đăng ký</a>
+                    <a href="../login.html" class="btn btn-outline-light me-2 rounded-pill px-3">Đăng nhập</a>
+                `;
+            }
+            loadFAQs();
+        });
+        async function logout() {
+            const token = localStorage.getItem("access_token");
+            if (!confirm("Bạn có chắc chắn muốn đăng xuất?")) return;
+
+            try {
+                await fetch("https://api.ducmanhsuncloud.click/logout", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ action: "Logout" })
+                });
+            } catch (err) {
+                console.error("Lỗi khi logout:", err);
+            } finally {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("customer_id");
+                localStorage.removeItem("username");
+                localStorage.removeItem("fullnameuser");
+                localStorage.removeItem("emailuser");    
+                window.location.href = "../home.html"; 
+            }
+        }
+        function goBack() {
+            if (isLoggedIn) window.history.back();
+            else window.location.href = "../home.html";
+        }
+        document.getElementById("contactForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            
+            const subject = document.getElementById("subject").value;
+            const message = document.getElementById("message").value;
+            let email = document.getElementById("contact-email").value;
+
+            if (!email) { alert("Vui lòng nhập email của bạn."); return; }
+            
+            const btn = this.querySelector("button[type=submit]");
+            const originalText = btn.innerHTML;
+            btn.disabled = true; 
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
+
+            try {
+                const token = localStorage.getItem("access_token");
+                let headers = { "Content-Type": "application/json" };
+                if (token) headers["Authorization"] = `Bearer ${token}`;
+
+                const res = await fetch(`${API_BASE_URL}/help/contact_admin`, {
+                    method: "POST",
+                    headers: headers,
+                    body: JSON.stringify({ 
+                        subject: subject, 
+                        message: message,
+                        email: email
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok) { 
+                    alert(data.message || "Gửi thành công!"); 
+                    this.reset(); 
+                    if(!isLoggedIn) document.getElementById("email-field-container").style.display = "block";
+                } else { 
+                    alert(data.msg || "Gửi thất bại. Vui lòng thử lại."); 
+                }
+            } catch (error) { 
+                alert("Lỗi kết nối."); 
+            } finally { 
+                btn.disabled = false; 
+                btn.innerHTML = originalText; 
+            }
+        });
+        async function loadFAQs() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/help`);
+                if (!res.ok) throw new Error("Lỗi tải");
+                const helps = await res.json();
+                
+                const accordion = document.getElementById("faqAccordion");
+                accordion.innerHTML = "";
+                if (!helps.length) { accordion.innerHTML = "<div class='text-center py-4 text-muted'>Chưa có câu hỏi nào.</div>"; return; }
+
+                helps.forEach((item, index) => {
+                    accordion.innerHTML += `
+                        <div class="accordion-item shadow-sm">
+                            <h2 class="accordion-header" id="heading${index}">
+                                <button class="accordion-button ${index !== 0 ? 'collapsed' : ''} fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}">
+                                    ${item.question}
+                                </button>
+                            </h2>
+                            <div id="collapse${index}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-secondary bg-white">${item.answer}</div>
+                            </div>
+                        </div>`;
+                });
+            } catch (error) {
+                document.getElementById("faqAccordion").innerHTML = "<div class='text-center text-muted'>Không thể tải danh sách câu hỏi.</div>";
+            }
+        }
+        function toggleChat() {
+            const w = document.getElementById("chatWindow");
+            w.style.display = (w.style.display === "flex") ? "none" : "flex";
+            if(w.style.display==="flex") document.getElementById("userInput").focus();
+        }
+        function handleEnter(e) { if (e.key === 'Enter') sendMessage(); }
+        function appendMessage(text, sender) {
+            const b = document.getElementById("chatBody");
+            const d = document.createElement("div");
+            d.className = `message ${sender}`;
+            d.innerHTML = text.replace(/\n/g, "<br>");
+            b.appendChild(d); b.scrollTop = b.scrollHeight;
+        }
+        async function sendMessage() {
+            const input = document.getElementById("userInput");
+            const text = input.value.trim();
+            if (!text) return;
+            appendMessage(text, 'user');
+            input.value = "";
+            document.getElementById("typingIndicator").style.display = "block";
+
+            try {
+                const token = localStorage.getItem("access_token");
+                let headers = { "Content-Type": "application/json" };
+                if (token) headers["Authorization"] = `Bearer ${token}`;
+
+                const res = await fetch(`${API_BASE_URL}/help/chat`, {
+                    method: "POST",
+                    headers: headers,
+                    body: JSON.stringify({ message: text })
+                });
+                let data = {};
+                try {
+                    data = await res.json();
+                } catch (err) {
+                    console.warn("Server không trả về JSON hợp lệ");
+                }
+                document.getElementById("typingIndicator").style.display = "none";
+                if (res.ok) {
+                    appendMessage(data.reply, 'bot');
+                } else {
+                    if (res.status === 429) {
+                        appendMessage("⚠️ Hệ thống AI đang quá tải (vượt giới hạn). Vui lòng tìm kiếm câu trả lời từ phía Admin hoặc thử lại sau.", 'bot');
+                    } 
+                    else if (res.status === 401 || res.status === 403) {
+                        appendMessage("Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.", 'bot');
+                    } 
+                    else if (res.status === 500) {
+                        appendMessage("Máy chủ đang gặp sự cố. Vui lòng thử lại sau.", 'bot');
+                    } 
+                    else {
+                        const msg = data.reply || data.message || "Đã xảy ra lỗi không xác định.";
+                        appendMessage(msg, 'bot');
+                    }
+                }
+
+            } catch (e) {
+                console.error(e);
+                document.getElementById("typingIndicator").style.display = "none";
+                appendMessage("Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng.", 'bot');
+            }
+        }
+    </script>
+</body>
+</html>

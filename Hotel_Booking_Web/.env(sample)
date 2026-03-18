@@ -1,0 +1,13 @@
+DB_HOST=localhost
+DB_USER=admin
+DB_PASSWORD=28072003
+DB_NAME=hotel_booking
+JWT_SECRET_KEY=Ducmanh
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=465
+SENDER_EMAIL=abc@gmail.com
+APP_PASSWORD=abcd efgh jklm noup
+URL=https://172.168.66.82:8000
+API_KEY=Ajasdnajnfuna_Sas18291jasdaf
+IP=172.16.66.82
+API_URL=https://172.16.66.82:5000

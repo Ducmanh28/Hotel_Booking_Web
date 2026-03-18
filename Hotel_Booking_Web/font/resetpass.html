@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khôi phục mật khẩu - HotelBooking</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Container */
+        .reset-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Main Card */
+        .card-reset {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: none;
+            overflow: hidden;
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        /* Headers */
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #e7f1ff;
+            color: #0d6efd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 20px;
+        }
+
+        h2 {
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 10px;
+        }
+
+        p.description {
+            color: #6c757d;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        /* Form Controls */
+        .form-control {
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+            border-color: #0d6efd;
+        }
+
+        /* OTP Inputs */
+        .otp-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-radius: 10px;
+            border: 1px solid #ced4da;
+            transition: all 0.2s;
+        }
+        .otp-input:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2);
+            outline: none;
+            transform: translateY(-2px);
+        }
+
+        /* Button */
+        .btn-action {
+            background: linear-gradient(to right, #0d6efd, #0b5ed7);
+            border: none;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            width: 100%;
+            color: white;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+            color: white;
+        }
+
+        /* Helper Links */
+        .back-link {
+            margin-top: 20px;
+            display: block;
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .back-link:hover {
+            color: #0d6efd;
+        }
+
+        /* Steps Visibility */
+        .form-step {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            text-align: left;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4" href="home.html">
+                <i class="fa-solid fa-hotel me-2"></i>HotelBooking
+            </a>
+            <div class="ms-auto">
+                <a href="login.html" class="btn btn-outline-light me-2 btn-sm rounded-pill px-3">Đăng nhập</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="reset-container">
+        <div class="card-reset">
+            
+            <div id="emailStep" class="form-step active">
+                <div class="step-icon">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h2>Quên Mật Khẩu?</h2>
+                <p class="description">Đừng lo! Nhập email của bạn để chúng tôi gửi mã xác nhận.</p>
+                
+                <div class="mb-3 text-start">
+                    <label class="form-label fw-bold small text-muted">Email đăng ký</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-envelope text-muted"></i></span>
+                        <input type="email" id="email" class="form-control border-start-0 ps-0" placeholder="name@example.com">
+                    </div>
+                    <div id="emailError" class="error-message"><i class="fa-solid fa-circle-exclamation me-1"></i>Email không tồn tại</div>
+                </div>
+                
+                <button class="btn btn-action" onclick="checkEmail()">Gửi Mã Xác Nhận</button>
+                <a href="login.html" class="back-link"><i class="fa-solid fa-arrow-left me-1"></i>Quay lại đăng nhập</a>
+            </div>
+
+            <div id="otpStep" class="form-step">
+                <div class="step-icon">
+                    <i class="fa-solid fa-envelope-open-text"></i>
+                </div>
+                <h2>Xác Thực OTP</h2>
+                <p class="description">Mã gồm 6 số đã được gửi đến email của bạn.</p>
+                
+                <div class="otp-group">
+                    <input type="text" maxlength="1" class="otp-input" onkeyup="moveToNext(this, 0)">
+                    <input type="text" maxlength="1" class="otp-input" onkeyup="moveToNext(this, 1)">
+                    <input type="text" maxlength="1" class="otp-input" onkeyup="moveToNext(this, 2)">
+                    <input type="text" maxlength="1" class="otp-input" onkeyup="moveToNext(this, 3)">
+                    <input type="text" maxlength="1" class="otp-input" onkeyup="moveToNext(this, 4)">
+                    <input type="text" maxlength="1" class="otp-input" onkeyup="moveToNext(this, 5)">
+                </div>
+                <div id="otpError" class="error-message text-center mb-3"><i class="fa-solid fa-circle-exclamation me-1"></i>Mã OTP không chính xác</div>
+                
+                <button class="btn btn-action" onclick="verifyOTP()">Xác Thực</button>
+                <a href="#" onclick="goBack('emailStep')" class="back-link">Nhập lại Email</a>
+            </div>
+
+            <div id="passwordStep" class="form-step">
+                <div class="step-icon">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <h2>Đặt Lại Mật Khẩu</h2>
+                <p class="description">Tạo mật khẩu mới để bảo vệ tài khoản của bạn.</p>
+                
+                <div class="mb-3 text-start">
+                    <label class="form-label fw-bold small text-muted">Mật khẩu mới</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-lock text-muted"></i></span>
+                        <input type="password" id="newPassword" class="form-control border-start-0 ps-0" placeholder="Ít nhất 8 ký tự">
+                    </div>
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label class="form-label fw-bold small text-muted">Xác nhận mật khẩu</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-check-double text-muted"></i></span>
+                        <input type="password" id="confirmPassword" class="form-control border-start-0 ps-0" placeholder="Nhập lại mật khẩu">
+                    </div>
+                    <div id="passwordError" class="error-message"><i class="fa-solid fa-circle-exclamation me-1"></i>Mật khẩu không khớp</div>
+                </div>
+                
+                <button class="btn btn-action" onclick="resetPassword()">Đổi Mật Khẩu</button>
+                <a href="#" onclick="goBack('otpStep')" class="back-link">Quay lại</a>
+            </div>
+
+            <div id="successStep" class="form-step">
+                <div class="step-icon bg-success text-white">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h2 class="text-success">Thành Công!</h2>
+                <p class="description">Mật khẩu của bạn đã được cập nhật. Bạn có thể đăng nhập ngay bây giờ.</p>
+                
+                <button class="btn btn-action btn-success" onclick="redirectToLogin()">Đăng Nhập Ngay</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let userEmail = '';
+        let userOTP = '';
+      
+        // Bước 1: Gửi yêu cầu quên mật khẩu
+        async function checkEmail() {
+            const email = document.getElementById('email').value;
+            const emailError = document.getElementById('emailError');
+            const btn = document.querySelector('#emailStep .btn-action');
+        
+            if (!email) {
+                emailError.innerHTML = "<i class='fa-solid fa-circle-exclamation me-1'></i>Vui lòng nhập email!";
+                emailError.style.display = "block";
+                return;
+            }
+            
+            // Hiệu ứng loading
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
+            btn.disabled = true;
+        
+            try {
+                const response = await fetch("https://api.ducmanhsuncloud.click/forgot-password", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: email })
+                });
+        
+                if (response.ok) {
+                    userEmail = email;
+                    changeStep('emailStep', 'otpStep');
+                    emailError.style.display = 'none';
+                } else {
+                    emailError.innerHTML = "<i class='fa-solid fa-circle-exclamation me-1'></i>Email không tồn tại trong hệ thống!";
+                    emailError.style.display = "block";
+                }
+            } catch (error) {
+                console.error("Lỗi khi gửi yêu cầu:", error);
+                alert("Lỗi kết nối server");
+            } finally {
+                btn.innerHTML = 'Gửi Mã Xác Nhận';
+                btn.disabled = false;
+            }
+        }
+      
+        // Bước 2: Kiểm tra OTP
+        function verifyOTP() {
+            const otpInputs = document.querySelectorAll(".otp-input");
+            let enteredOTP = "";
+            otpInputs.forEach(input => enteredOTP += input.value);
+        
+            const otpError = document.getElementById('otpError');
+        
+            if (enteredOTP.length !== 6) {
+                otpError.innerHTML = "<i class='fa-solid fa-circle-exclamation me-1'></i>Mã OTP phải có 6 chữ số!";
+                otpError.style.display = "block";
+                return;
+            }
+        
+            otpError.style.display = "none";
+            userOTP = enteredOTP;
+        
+            // Chuyển bước
+            changeStep("otpStep", "passwordStep");
+        }
+      
+        // Bước 3: Đặt lại mật khẩu
+        async function resetPassword() {
+            const newPassword = document.getElementById("newPassword").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+            const passwordError = document.getElementById("passwordError");
+            const btn = document.querySelector('#passwordStep .btn-action');
+        
+            if (newPassword.length < 8) {
+                passwordError.innerHTML = "<i class='fa-solid fa-circle-exclamation me-1'></i>Mật khẩu ít nhất 8 ký tự!";
+                passwordError.style.display = "block";
+                return;
+            }
+        
+            if (newPassword !== confirmPassword) {
+                passwordError.innerHTML = "<i class='fa-solid fa-circle-exclamation me-1'></i>Mật khẩu không khớp!";
+                passwordError.style.display = "block";
+                return;
+            }
+            
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+            btn.disabled = true;
+        
+            try {
+                const response = await fetch("https://api.ducmanhsuncloud.click/reset-password", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email: userEmail,
+                        otp: userOTP,
+                        new_password: newPassword
+                    })
+                });
+        
+                if (response.ok) {
+                    changeStep("passwordStep", "successStep");
+                } else {
+                    alert("Lỗi đặt lại mật khẩu! Vui lòng kiểm tra lại OTP hoặc thử lại.");
+                    btn.innerHTML = 'Đổi Mật Khẩu';
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error("Lỗi:", error);
+                btn.innerHTML = 'Đổi Mật Khẩu';
+                btn.disabled = false;
+            }
+        }
+      
+        // Helper Functions
+        function changeStep(currentStepId, nextStepId) {
+            document.getElementById(currentStepId).classList.remove('active');
+            document.getElementById(nextStepId).classList.add('active');
+        }
+      
+        function goBack(stepId) {
+            document.querySelector('.form-step.active').classList.remove('active');
+            document.getElementById(stepId).classList.add('active');
+        }
+
+        function redirectToLogin() {
+            window.location.href = "login.html";
+        }
+
+        // Logic tự động nhảy ô OTP
+        function moveToNext(input, index) {
+            const inputs = document.querySelectorAll('.otp-input');
+      
+            if (event.key === "Backspace" && input.value === "" && index > 0) {
+                inputs[index - 1].focus();
+                return;
+            }
+      
+            if (input.value.length === 1 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+      
+            if (input.value.length > 1) {
+                input.value = input.value.charAt(0);
+            }
+        }
+    </script>
+</body>
+</html>

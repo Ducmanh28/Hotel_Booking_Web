@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Hotel Booking</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  
+  <style>
+    :root {
+      --primary-color: #0d6efd;
+      --sidebar-width: 260px;
+      --bg-color: #f3f4f7;
+      --card-bg: #ffffff;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      overflow-x: hidden;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #fff !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      z-index: 1000;
+      height: 70px;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--primary-color) !important;
+      font-size: 1.5rem;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      min-height: calc(100vh - 70px);
+      background-color: #fff;
+      border-right: 1px solid #eee;
+      position: fixed;
+      top: 70px;
+      left: 0;
+      padding: 20px 0;
+      overflow-y: auto;
+      transition: all 0.3s;
+    }
+
+    .main-content {
+      margin-left: var(--sidebar-width);
+      margin-top: 70px;
+      padding: 30px;
+      width: calc(100% - var(--sidebar-width));
+    }
+
+    .sidebar .profile {
+      text-align: center;
+      padding: 0 20px 20px 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .sidebar .profile img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid var(--bg-color);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .sidebar .profile img:hover { transform: scale(1.05); }
+
+    .nav-link {
+      color: #6c757d;
+      font-weight: 500;
+      padding: 12px 25px;
+      margin-bottom: 5px;
+      border-radius: 0 25px 25px 0;
+      transition: all 0.2s;
+      margin-right: 15px;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background-color: #e7f1ff;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    
+    .nav-link i { margin-right: 10px; font-size: 1.1rem; }
+
+    /* Cards Stats */
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+      padding: 25px;
+      transition: transform 0.3s;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stat-card:hover { transform: translateY(-5px); }
+
+    .stat-icon {
+      width: 60px; height: 60px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .stat-info h5 { color: #8898aa; font-size: 0.9rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
+    .stat-info h2 { color: #32325d; font-weight: 700; margin-bottom: 0; font-size: 1.8rem; }
+
+    /* Colors for stats */
+    .bg-soft-primary { background-color: #e7f1ff; color: #0d6efd; }
+    .bg-soft-success { background-color: #d1e7dd; color: #198754; }
+    .bg-soft-warning { background-color: #fff3cd; color: #ffc107; }
+    .bg-soft-danger { background-color: #f8d7da; color: #dc3545; }
+
+    /* Chart Section */
+    .chart-container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+      padding: 25px;
+      margin-top: 30px;
+    }
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .form-control, .form-select {
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      padding: 8px 15px;
+    }
+    .btn-success {
+      border-radius: 8px;
+      padding: 8px 20px;
+      font-weight: 500;
+      box-shadow: 0 4px 6px rgba(25, 135, 84, 0.2);
+    }
+  </style>
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="admin.html">
+        <i class="bi bi-buildings-fill me-2"></i>Hotel Admin
+      </a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <div class="d-none d-md-block text-muted small" id="today-date"></div>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm px-3 rounded-pill">
+          <i class="bi bi-box-arrow-right me-1"></i> Đăng Xuất
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar d-flex flex-column">
+    <div class="profile">
+      <img src="admin.jpg" alt="Admin Avatar" id="admin-avatar"/>
+      <p class="mt-3 mb-0 fw-bold text-dark" id="admin-name">Loading...</p>
+      <small class="text-muted">Administrator</small>
+    </div>
+    <nav class="nav flex-column">
+      <a class="nav-link active" href="admin.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a class="nav-link" href="manage_users.html"><i class="bi bi-people"></i> Quản lý người dùng</a>
+      <a class="nav-link" href="manage_hotels.html"><i class="bi bi-building"></i> Quản lý khách sạn</a>
+      <a class="nav-link" href="manage_rooms.html"><i class="bi bi-door-open"></i> Quản lý phòng</a>
+      <a class="nav-link" href="manage_services.html"><i class="bi bi-gear"></i> Quản lý dịch vụ</a>
+      <a class="nav-link" href="manage_invoices.html"><i class="bi bi-receipt"></i> Quản lý hóa đơn</a>
+      <a class="nav-link" href="manage_schedule.html"><i class="bi bi-calendar-check"></i> Quản lý lịch</a>
+      <a class="nav-link" href="manage_supports.html"><i class="bi bi-headset"></i> Hỗ trợ khách hàng</a>
+      <a class="nav-link" href="manage_log.html"><i class="bi bi-journal-text"></i> Xem Log</a>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    
+    <div class="row g-4 mb-4">
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h5>Đơn hàng</h5>
+            <h2 id="Order-total">...</h2>
+          </div>
+          <div class="stat-icon bg-soft-primary">
+            <i class="bi bi-cart-fill"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h5>Khách sạn</h5>
+            <h2 id="Hotel-total">...</h2>
+          </div>
+          <div class="stat-icon bg-soft-warning">
+            <i class="bi bi-building"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h5>Khách hàng</h5>
+            <h2 id="User-total">...</h2>
+          </div>
+          <div class="stat-icon bg-soft-success">
+            <i class="bi bi-people-fill"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h5>Doanh thu</h5>
+            <h2 id="Money-total">...</h2>
+          </div>
+          <div class="stat-icon bg-soft-danger">
+            <i class="bi bi-currency-dollar"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-header">
+        <h5 class="fw-bold m-0"><i class="bi bi-bar-chart-line-fill me-2 text-primary"></i>Báo Cáo Thống Kê</h5>
+        <div class="d-flex gap-2 flex-wrap">
+          <div>
+            <select class="form-select form-select-sm" id="report-type">
+              <option value="revenue">Doanh thu</option>
+              <option value="orders">Lượt mua</option>
+              <option value="customers">Số khách hàng</option>
+            </select>
+          </div>
+          <div>
+            <select class="form-select form-select-sm" id="report-range">
+              <option value="month">Theo Tháng</option>
+              <option value="quarter">Theo Quý</option>
+              <option value="year">Theo Năm</option>
+            </select>
+          </div>
+          <div style="width: 100px;">
+            <input type="number" class="form-control form-control-sm" id="report-year" value="2025" min="2000" max="2026">
+          </div>
+          <button class="btn btn-success btn-sm" onclick="loadReport()">
+            <i class="bi bi-filter"></i> Tìm kiếm
+          </button>
+        </div>
+      </div>
+      
+      <div style="height: 350px; position: relative;">
+        <canvas id="reportChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const token = localStorage.getItem("access_token");
+    const admin_Id = localStorage.getItem("customer_id");
+    let reportChart;
+
+    const formatCurrency = (amount) => {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    };
+
+    // 2. Format Date
+    const today = new Date();
+    document.getElementById("today-date").innerText = today.toLocaleDateString("vi-VN", { 
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+    });
+    async function loadInitialData() {
+      if (!token) {
+        alert("Vui lòng đăng nhập!");
+        window.location.href = "../home.html";
+        return;
+      }
+
+      const headers = {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      };
+
+      try {
+        const [userRes, hotelRes, invoiceRes, paymentRes, adminRes] = await Promise.all([
+          fetch(`https://api.ducmanhsuncloud.click/admin/customers/total`, { headers }),
+          fetch(`https://api.ducmanhsuncloud.click/admin/hotels/total`, { headers }),
+          fetch(`https://api.ducmanhsuncloud.click/admin/invoices/total`, { headers }),
+          fetch(`https://api.ducmanhsuncloud.click/admin/payment/total`, { headers }),
+          fetch(`https://api.ducmanhsuncloud.click/customers/${admin_Id}`, { headers })
+        ]);
+
+        const userData = await userRes.json();
+        const hotelData = await hotelRes.json();
+        const invoiceData = await invoiceRes.json();
+        const paymentData = await paymentRes.json();
+        const adminData = await adminRes.json();
+
+        // Update UI
+        document.getElementById("User-total").innerText = userData.count || 0;
+        document.getElementById("Hotel-total").innerText = hotelData.count || 0;
+        document.getElementById("Order-total").innerText = invoiceData.count || 0;
+        document.getElementById("Money-total").innerText = formatCurrency(paymentData.total || 0);
+        
+        document.getElementById("admin-name").innerText = adminData.full_name;
+        localStorage.setItem("ADMINNAME", adminData.full_name);
+
+        // Load default chart
+        loadReport();
+
+      } catch (error) {
+        console.error("Lỗi tải dữ liệu:", error);
+      }
+    }
+
+    function loadReport() {
+      const type = document.getElementById('report-type').value;
+      const range = document.getElementById('report-range').value;
+      const year = document.getElementById('report-year').value;
+
+      fetch(`https://api.ducmanhsuncloud.click/admin/report`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          type: type,
+          range: range,
+          year: parseInt(year),
+        }),
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        if (reportChart) reportChart.destroy();
+
+        const ctx = document.getElementById("reportChart").getContext('2d');
+        
+        // Gradient for chart
+        let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(25, 135, 84, 0.5)');
+        gradient.addColorStop(1, 'rgba(25, 135, 84, 0.05)');
+
+        reportChart = new Chart(ctx, {
+          type: "bar", 
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: getLabel(type),
+              data: data.values,
+              backgroundColor: type === 'revenue' ? '#0d6efd' : '#198754',
+              borderRadius: 5,
+              borderWidth: 1
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: true, position: 'top' },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                      label += ': ';
+                    }
+                    if (context.parsed.y !== null) {
+                      label += type === 'revenue' 
+                        ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y)
+                        : context.parsed.y;
+                    }
+                    return label;
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: '#f0f0f0' },
+                ticks: {
+                  callback: function (value) {
+                    return type === "revenue" ? value.toLocaleString('vi-VN') + ' đ' : value;
+                  },
+                },
+              },
+              x: {
+                grid: { display: false }
+              }
+            },
+          },
+        });
+      });
+    }
+
+    function getLabel(type) {
+      switch(type) {
+        case 'revenue': return 'Doanh thu (VNĐ)';
+        case 'orders': return 'Lượt mua';
+        case 'customers': return 'Khách hàng mới';
+        default: return '';
+      }
+    }
+
+    // 5. Logout
+    document.getElementById("logoutBtn").addEventListener("click", async function () {
+      if(!confirm("Bạn chắc chắn muốn đăng xuất?")) return;
+      
+      try {
+        await fetch("https://api.ducmanhsuncloud.click/logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ action: "Logout" })
+        });
+      } catch (err) {
+        console.warn("Lỗi API logout nhưng vẫn sẽ xóa token client");
+      }
+      
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("customer_id");
+      localStorage.removeItem("ADMINNAME");
+      window.location.href = "../home.html";
+    });
+
+    // 6. Navigate to profile
+    document.getElementById("admin-avatar").addEventListener("click", function() {
+        window.location.href = "admin_info.html";
+    });
+
+    // Init
+    window.onload = loadInitialData;
+  </script>
+</body>
+</html>

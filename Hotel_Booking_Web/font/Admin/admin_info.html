@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thông tin Admin - Hotel Admin</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  
+  <style>
+    :root {
+      --primary-color: #0d6efd;
+      --sidebar-width: 260px;
+      --bg-color: #f3f4f7;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      overflow-x: hidden;
+    }
+
+    /* Navbar & Sidebar (Đồng bộ) */
+    .navbar {
+      background-color: #fff !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      z-index: 1000;
+      height: 70px;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--primary-color) !important;
+      font-size: 1.5rem;
+    }
+    
+    .sidebar {
+      width: var(--sidebar-width);
+      min-height: calc(100vh - 70px);
+      background-color: #fff;
+      border-right: 1px solid #eee;
+      position: fixed;
+      top: 70px;
+      left: 0;
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+
+    .main-content {
+      margin-left: var(--sidebar-width);
+      margin-top: 70px;
+      padding: 30px;
+      width: calc(100% - var(--sidebar-width));
+    }
+
+    .sidebar .profile {
+      text-align: center;
+      padding: 0 20px 20px 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .sidebar .profile img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid var(--bg-color);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .nav-link {
+      color: #6c757d;
+      font-weight: 500;
+      padding: 12px 25px;
+      margin-bottom: 5px;
+      border-radius: 0 25px 25px 0;
+      transition: all 0.2s;
+      margin-right: 15px;
+    }
+    .nav-link:hover, .nav-link.active {
+      background-color: #e7f1ff;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    .nav-link i { margin-right: 10px; font-size: 1.1rem; }
+
+    /* Profile Specific Styles */
+    .card-profile {
+      border: none;
+      border-radius: 15px;
+      background: white;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+      overflow: hidden;
+    }
+    
+    .profile-header {
+      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+      padding: 40px 20px;
+      color: white;
+      text-align: center;
+    }
+    
+    .profile-avatar-lg {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 4px solid rgba(255,255,255,0.3);
+      object-fit: cover;
+      margin-bottom: 15px;
+      background-color: #fff;
+    }
+
+    .info-item {
+      padding: 15px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .info-item:last-child { border-bottom: none; }
+    .info-label { font-weight: 600; color: #6c757d; margin-bottom: 5px; }
+    .info-value { color: #333; font-weight: 500; font-size: 1.05rem; }
+
+    .form-label { font-weight: 500; color: #495057; }
+    .form-control:focus { box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15); border-color: #86b7fe; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="admin.html">
+        <i class="bi bi-buildings-fill me-2"></i>Hotel Admin
+      </a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <div class="d-none d-md-block text-muted small" id="today-date"></div>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm px-3 rounded-pill">
+          <i class="bi bi-box-arrow-right me-1"></i> Đăng Xuất
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar d-flex flex-column">
+    <div class="profile">
+      <img src="admin.jpg" alt="Admin Avatar" id="admin-avatar" style="cursor: pointer;"/>
+      <p class="mt-3 mb-0 fw-bold text-dark" id="display-admin-name">Loading...</p>
+      <small class="text-muted">Administrator</small>
+    </div>
+    <nav class="nav flex-column">
+      <a class="nav-link" href="admin.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a class="nav-link" href="manage_users.html"><i class="bi bi-people"></i> Quản lý người dùng</a>
+      <a class="nav-link" href="manage_hotels.html"><i class="bi bi-building"></i> Quản lý khách sạn</a>
+      <a class="nav-link" href="manage_rooms.html"><i class="bi bi-door-open"></i> Quản lý phòng</a>
+      <a class="nav-link" href="manage_services.html"><i class="bi bi-gear"></i> Quản lý dịch vụ</a>
+      <a class="nav-link" href="manage_invoices.html"><i class="bi bi-receipt"></i> Quản lý hóa đơn</a>
+      <a class="nav-link" href="manage_schedule.html"><i class="bi bi-calendar-check"></i> Quản lý lịch</a>
+      <a class="nav-link" href="manage_supports.html"><i class="bi bi-headset"></i> Hỗ trợ khách hàng</a>
+      <a class="nav-link" href="manage_log.html"><i class="bi bi-journal-text"></i> Xem Log</a>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <div class="container-fluid p-0">
+      
+      <div id="view-mode">
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="card-profile h-100">
+              <div class="profile-header">
+                <img src="admin.jpg" alt="Profile" class="profile-avatar-lg shadow">
+                <h4 class="mb-1" id="info-username">...</h4>
+                <p class="mb-0 opacity-75" id="info-role">...</p>
+              </div>
+              <div class="p-4">
+                <div class="info-item">
+                  <div class="info-label"><i class="bi bi-envelope me-2"></i>Email</div>
+                  <div class="info-value" id="info-email">...</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label"><i class="bi bi-phone me-2"></i>Số điện thoại</div>
+                  <div class="info-value" id="info-phone">...</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label"><i class="bi bi-geo-alt me-2"></i>Địa chỉ</div>
+                  <div class="info-value" id="info-address">...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-8">
+            <div class="card-profile h-100 p-4">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0">Thông tin chi tiết</h5>
+                <button class="btn btn-primary" id="edit-btn">
+                  <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa
+                </button>
+              </div>
+              
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <div class="info-item pt-0">
+                    <div class="info-label">Họ và tên</div>
+                    <div class="info-value text-primary" id="info-full_name">...</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info-item pt-0">
+                    <div class="info-label">Ngày sinh</div>
+                    <div class="info-value" id="info-birth_date">...</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <div class="info-label">Số CCCD/CMND</div>
+                    <div class="info-value" id="info-ccid">...</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <div class="info-label">Quyền hạn</div>
+                    <div class="info-value"><span class="badge bg-success bg-opacity-10 text-success px-3">Administrator</span></div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <div class="info-label">Ngày tạo</div>
+                    <div class="info-value small text-muted" id="info-create">...</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <div class="info-label">Cập nhật lần cuối</div>
+                    <div class="info-value small text-muted" id="info-update">...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="edit-mode" style="display: none;">
+        <div class="card-profile p-4">
+          <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+            <h5 class="fw-bold mb-0 text-primary">Chỉnh sửa thông tin cá nhân</h5>
+            <button class="btn btn-light border" id="cancel-edit">
+              <i class="bi bi-x-lg me-1"></i> Hủy bỏ
+            </button>
+          </div>
+
+          <form id="admin-edit-form">
+            <div class="row g-4">
+              <div class="col-12"><h6 class="text-muted fw-bold mb-0">Thông tin tài khoản</h6></div>
+              <div class="col-md-6">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" name="username" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" required>
+              </div>
+
+              <div class="col-12 mt-4"><h6 class="text-muted fw-bold mb-0">Thông tin cá nhân</h6></div>
+              <div class="col-md-6">
+                <label class="form-label">Họ tên</label>
+                <input type="text" class="form-control" name="full_name">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Ngày sinh</label>
+                <input type="date" class="form-control" name="birth_date">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Số điện thoại</label>
+                <input type="text" class="form-control" name="phone">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Số CCCD</label>
+                <input type="text" class="form-control" name="citizen_id">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Địa chỉ</label>
+                <input type="text" class="form-control" name="current_address">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Mật khẩu mới (để trống nếu không đổi)</label>
+                <input type="password" class="form-control" name="password" placeholder="Nhập mật khẩu mới">
+              </div>
+
+              <div class="col-12 text-end mt-4 pt-3 border-top">
+                <button type="button" class="btn btn-light me-2" id="cancel-edit-btn">Hủy</button>
+                <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    const token = localStorage.getItem("access_token");
+    const adminID = localStorage.getItem("customer_id");
+    const API_URL = "https://api.ducmanhsuncloud.click";
+
+    // Helper: Display value or default
+    const displayValue = (val) => (val && String(val).trim() !== "") ? val : "Chưa cập nhật";
+    const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleString('vi-VN') : "...";
+
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!token) {
+         window.location.href = "../home.html";
+         return;
+      }
+
+      document.getElementById("display-admin-name").innerText = localStorage.getItem("ADMINNAME") || "Admin";
+      document.getElementById("today-date").innerText = new Date().toLocaleDateString("vi-VN", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById("admin-avatar").onclick = () => window.location.href = "admin_info.html";
+
+      loadAdminInfo();
+    });
+
+    // --- LOAD INFO ---
+    async function loadAdminInfo() {
+        try {
+            const res = await fetch(`${API_URL}/customers/${adminID}`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            if (data) {
+                // Update View Mode
+                document.getElementById("info-username").innerText = data.username;
+                document.getElementById("info-email").innerText = displayValue(data.email);
+                document.getElementById("info-full_name").innerText = displayValue(data.full_name);
+                document.getElementById("info-birth_date").innerText = displayValue(data.birth_date);
+                document.getElementById("info-phone").innerText = displayValue(data.phone_number);
+                document.getElementById("info-address").innerText = displayValue(data.current_address);
+                document.getElementById("info-ccid").innerText = displayValue(data.citizen_id);
+                document.getElementById("info-role").innerText = data.role === 'admin' ? 'Quản trị viên' : 'Nhân viên';
+                document.getElementById("info-create").innerText = formatDate(data.create_at);
+                document.getElementById("info-update").innerText = formatDate(data.updated_at);
+                
+
+                // Update Edit Form
+                const form = document.forms["admin-edit-form"];
+                form.username.value = data.username;
+                form.email.value = data.email;
+                form.full_name.value = data.full_name || "";
+                form.birth_date.value = data.birth_date || "";
+                form.phone.value = data.phone_number || "";
+                form.current_address.value = data.current_address || "";
+                form.citizen_id.value = data.citizen_id || "";
+                form.password.value = "";
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Không thể tải thông tin admin");
+        }
+    }
+
+    // --- TOGGLE MODES ---
+    const viewMode = document.getElementById("view-mode");
+    const editMode = document.getElementById("edit-mode");
+
+    document.getElementById("edit-btn").onclick = () => {
+        viewMode.style.display = "none";
+        editMode.style.display = "block";
+    };
+
+    const closeEdit = () => {
+        editMode.style.display = "none";
+        viewMode.style.display = "block";
+    };
+
+    document.getElementById("cancel-edit").onclick = closeEdit;
+    document.getElementById("cancel-edit-btn").onclick = closeEdit;
+
+    // --- SUBMIT UPDATE ---
+    document.getElementById("admin-edit-form").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = {};
+        
+        // Only include non-empty values
+        for (const [key, value] of formData.entries()) {
+            if (value.trim() !== "") data[key] = value;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/admin/customers/${adminID}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            alert(result.message || "Cập nhật thành công!");
+
+            // Log Action
+            await fetch(`${API_URL}/admin/logs`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify({ customer_id: adminID, action: "Update Admin Profile" })
+            });
+
+            closeEdit();
+            loadAdminInfo();
+
+        } catch (err) {
+            alert("Lỗi cập nhật: " + err.message);
+        }
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").onclick = async () => {
+       if(!confirm("Đăng xuất?")) return;
+       try { await fetch(`${API_URL}/logout`, { method: "POST", headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify({ action: "Logout" }) }); } catch(e){}
+       localStorage.clear();
+       window.location.href = "../home.html";
+    };
+
+  </script>
+</body>
+</html>
